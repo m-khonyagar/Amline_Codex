@@ -14,8 +14,10 @@ class LocalBridge:
     def _resolve(self, user_path: str) -> Path:
         raw = (self.policy.workspace_root / user_path).resolve()
         workspace = self.policy.workspace_root.resolve()
-        if not str(raw).startswith(str(workspace)):
-            raise PermissionError("Path escapes WORKSPACE_ROOT")
+        try:
+            raw.relative_to(workspace)
+        except ValueError as exc:
+            raise PermissionError("Path escapes WORKSPACE_ROOT") from exc
         return raw
 
     def list_dir(self, path: str = ".") -> dict:
