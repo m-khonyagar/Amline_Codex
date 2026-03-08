@@ -67,60 +67,66 @@ class AgentRunner:
         )
 
         pending_approvals: list[dict[str, Any]] = []
+        status = "completed"
 
-        for _ in range(self.max_turns):
-            calls = self._collect_function_calls(response)
-            if not calls:
-                break
+        try:
+            for _ in range(self.max_turns):
+                calls = self._collect_function_calls(response)
+                if not calls:
+                    break
 
-            approval_triggered = False
-            tool_outputs = []
+                approval_triggered = False
+                tool_outputs = []
 
-            for call in calls:
-                try:
-                    args = json.loads(call["arguments"] or "{}")
-                except json.JSONDecodeError:
-                    args = {}
+                for call in calls:
+                    try:
+                        args = json.loads(call["arguments"] or "{}")
+                    except json.JSONDecodeError:
+                        args = {}
 
-                approval = self.approval_check(call["name"], args) if self.approval_check else None
-                if approval is not None:
-                    approval_triggered = True
-                    pending_approvals.append(approval)
-                    result = {
-                        "ok": False,
-                        "approval_required": True,
-                        "approval": approval,
-                        "tool": call["name"],
-                    }
-                else:
-                    result = self.registry.execute(call["name"], args)
+                    approval = self.approval_check(call["name"], args) if self.approval_check else None
+                    if approval is not None:
+                        approval_triggered = True
+                        pending_approvals.append(approval)
+                        result = {
+                            "ok": False,
+                            "approval_required": True,
+                            "approval": approval,
+                            "tool": call["name"],
+                        }
+                    else:
+                        result = self.registry.execute(call["name"], args)
 
-                tool_outputs.append(
-                    {
-                        "type": "function_call_output",
-                        "call_id": call["call_id"],
-                        "output": json.dumps(result, ensure_ascii=False),
-                    }
+                    tool_outputs.append(
+                        {
+                            "type": "function_call_output",
+                            "call_id": call["call_id"],
+                            "output": json.dumps(result, ensure_ascii=False),
+                        }
+                    )
+
+                response = self.client.responses.create(
+                    model=self.model,
+                    previous_response_id=response.id,
+                    input=tool_outputs,
+                    tools=tools,
                 )
 
-            response = self.client.responses.create(
-                model=self.model,
-                previous_response_id=response.id,
-                input=tool_outputs,
-                tools=tools,
-            )
+                if approval_triggered:
+                    return {
+                        "status": "awaiting_approval",
+                        "output_text": self._text_from_response(response),
+                        "pending_approvals": pending_approvals,
+                        "response_id": response.id,
+                    }
+            else:
+                status = "max_turns_reached"
 
-            if approval_triggered:
-                return {
-                    "status": "awaiting_approval",
-                    "output_text": self._text_from_response(response),
-                    "pending_approvals": pending_approvals,
-                    "response_id": response.id,
-                }
-
-        return {
-            "status": "completed",
-            "output_text": self._text_from_response(response),
-            "pending_approvals": pending_approvals,
-            "response_id": response.id,
-        }
+            return {
+                "status": status,
+                "output_text": self._text_from_response(response),
+                "pending_approvals": pending_approvals,
+                "response_id": response.id,
+            }
+        finally:
+            self.browser.close()

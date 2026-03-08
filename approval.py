@@ -75,6 +75,9 @@ class ApprovalStore:
             raise ValueError("decision must be approve|deny")
 
         req = self._requests[approval_id]
+        if req.status != "pending":
+            raise ValueError(f"approval is already {req.status}")
+
         req.status = "approved" if decision == "approve" else "denied"
         req.decided_at = self._now()
         return req.to_dict()
