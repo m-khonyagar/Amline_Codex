@@ -1,0 +1,53 @@
+<section class="clause page-break">
+    <h2>ماده 4_ اجاره بها و نحوه پرداخت</h2>
+    <h3>بند اول- رهن (رهن قرض الحسنه)</h3>
+    <p>
+        میزان رهن به مبلغ
+        <span class="teal-dark">{{ contract.deposit_amount | separate_number }}</span>
+        تومان تعیین گردید.
+    </p>
+    <p>
+        موافقت شد که مستاجر طی
+        <span class="teal">{{ deposit_payments | length }} قسط</span>
+        مبلغ رهن را به مالک پرداخت نماید
+    </p>
+
+    {% with payments = deposit_payments %}
+    {% include "pr_contract/payments.html" %}
+    {% endwith %}
+
+    {% if tenant.bank_account %}
+    <h4 class="mt-3">تبصره:</h4>
+    <p>
+        پس از پایان مدت اجاره، مالک موظف است مبلغ رهن (قرض الحسنه) را به شماره شبای
+        <span class="teal-dark">IR{{ tenant.bank_account.iban }}</span>
+        اعلام شده از سمت مستاجر به نام
+        <span class="teal-dark">{{ tenant.bank_account.owner_name }}</span>
+        واریز نماید.
+    </p>
+    {% endif %}
+
+    <h3 class="mt-3">بند دوم_ اجاره</h3>
+
+    {% if monthly_rent_payment %}
+    <p>
+        مقرر گردید اجاره بها به صورت
+        <span class="teal-dark">ماهیانه</span>
+        از قرار هر ماه مبلغ
+        <span class="teal-dark">{{ contract.monthly_rent_amount | separate_number }}</span>
+        تومان در
+        <span class="teal-dark">{{ monthly_rent_payment.due_date | gregorian_to_jalali_day | number_to_persian_ordinal }}</span>
+        هر ماه به صورت
+        <span class="teal-dark">نقدی</span>
+        به شماره شبای
+        <span class="teal-dark">IR{{ landlord.rent_bank_account.iban }}</span>
+        به نام
+        <span class="teal-dark">{{ landlord.rent_bank_account.owner_name }}</span>
+        اعلام شده از طرف مالک پرداخت شود.
+    </p>
+    {% else %}
+    {% with payments = rent_payments %}
+    {% include "pr_contract/payments.html" %}
+    {% endwith %}
+    {% endif %}
+</section>

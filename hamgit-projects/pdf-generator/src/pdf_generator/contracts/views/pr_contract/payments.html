@@ -1,0 +1,14 @@
+<div class="mt-3">
+    {% for payment in payments %}
+    {% if loop.index != 1 %}
+        <div style="height: 12px"></div>
+    {% endif %}
+    {% with index=loop.index %}
+    {% if payment.method.value == 'CASH' %}
+        {% include "pr_contract/payment_cash_row.html" %}
+    {% elif payment.method.value == 'CHEQUE' %}
+        {% include "pr_contract/payment_cheque_row.html" %}
+    {% endif %}
+    {% endwith %}
+    {% endfor %}
+</div>

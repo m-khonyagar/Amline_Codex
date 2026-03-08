@@ -1,0 +1,12 @@
+<section class="clause">
+    <h2>ماده 5_ شرایط تحویل ملک</h2>
+
+    <p>
+        موجر باید در تاریخ
+        <span class="teal-dark">{{ contract.handover_date | gregorian_to_jalali_date }}</span>
+        ملک موضوع معامله را با تمام توابع و ملحقات آن جهت استفاده به مستاجر تقدیم کند و
+        در صورت عدم انجام تعهد فوق موجر باید به ازای هر روز تاخیر در تحویل مبلغ
+        <span class="teal-dark">{{ contract.landlord_penalty_fee | separate_number }}</span>
+        تومان به مستاجر پرداخت کند.
+    </p>
+</section>

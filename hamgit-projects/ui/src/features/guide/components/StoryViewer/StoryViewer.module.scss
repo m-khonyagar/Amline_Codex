@@ -1,0 +1,38 @@
+.story-container {
+  @apply relative flex-grow -mb-8 p-4;
+
+  background: linear-gradient(180deg, #179a9c 0%, #004041 100%);
+}
+
+.story-slots {
+  @apply w-full flex flex-row-reverse items-center gap-1.5 mb-6;
+
+  &__item {
+    @apply h-[2px] w-full bg-white rounded-full;
+  }
+}
+
+.story-image {
+  @apply relative w-[80%] mx-auto h-[520px] mb-6;
+
+  img {
+    @apply object-contain;
+  }
+}
+
+.story-description {
+  @apply text-base font-sans whitespace-pre-wrap w-full max-w-[400px] mx-auto font-bold text-white;
+}
+
+.story-next-btn,
+.story-prev-btn {
+  @apply p-1 text-white disabled:opacity-50 absolute top-1/2;
+}
+
+.story-prev-btn {
+  @apply left-0;
+}
+
+.story-next-btn {
+  @apply right-0;
+}

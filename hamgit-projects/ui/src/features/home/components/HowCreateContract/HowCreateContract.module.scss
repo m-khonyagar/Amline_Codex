@@ -1,0 +1,83 @@
+.container {
+}
+
+.step1,
+.step2,
+.step3,
+.step4,
+.step5 {
+  opacity: 0;
+  transition: all 0.75s linear;
+}
+
+.container--show {
+  .path1 {
+    stroke-dashoffset: 0;
+    transition: all 3s linear;
+    // animation: draw 2s linear forwards;
+  }
+
+  .path2 {
+    stroke-dashoffset: 0;
+    // animation: draw 2s linear forwards;
+    // animation-delay: 1s;
+    transition: all 0.75s linear;
+    transition-delay: 3s;
+  }
+
+  .step1 {
+    opacity: 1;
+    transition-delay: 0.6s;
+  }
+
+  .step2 {
+    opacity: 1;
+    transition-delay: 1.6s;
+  }
+
+  .step3 {
+    opacity: 1;
+    transition-delay: 2.1s;
+  }
+
+  .step4 {
+    opacity: 1;
+    transition-delay: 2.6s;
+  }
+
+  .step5 {
+    opacity: 1;
+    transition-delay: 3.3s;
+  }
+}
+
+// .path {
+//   stroke-dasharray: 1000;
+//   stroke-dashoffset: 1000;
+//   animation: dash 5s linear alternate infinite;
+// }
+
+// @keyframes dash {
+//   from {
+//     stroke-dashoffset: 822;
+//   }
+//   to {
+//     stroke-dashoffset: 0;
+//   }
+// }
+
+// .path {
+//   stroke-dasharray: 1000;
+//   stroke-dashoffset: 1000;
+//   animation: draw 2s linear forwards;
+// }
+
+// .path:last-of-type {
+//   animation-delay: 2s; /* Start after the first path animation ends */
+// }
+
+// @keyframes draw {
+//   to {
+//     stroke-dashoffset: 0;
+//   }
+// }

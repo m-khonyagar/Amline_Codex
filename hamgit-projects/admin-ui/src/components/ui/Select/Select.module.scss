@@ -1,0 +1,108 @@
+.select {
+  // margin-bottom: 15px;
+}
+
+.selected-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: rem(10px);
+  margin-bottom: rem(8px);
+
+  &__item {
+    display: flex;
+    align-items: center;
+    border-radius: rem(4px);
+    padding: rem(2px) rem(10px);
+    background: theme('colors.gray.200');
+    border: solid 1px theme('colors.teal.600');
+
+    button {
+      border: none;
+      outline: none;
+      background: none;
+      margin: 0 8px 0 -2px;
+    }
+  }
+}
+
+.bottom-sheet {
+  position: relative;
+}
+
+.bottom-sheet__loading {
+  gap: 1rem;
+  display: flex;
+  min-height: 10rem;
+  align-items: center;
+  font-size: rem(12px);
+  flex-direction: column;
+  justify-content: center;
+  color: theme('colors.gray.300');
+}
+
+.bottom-sheet__search-input {
+  margin-bottom: rem(8px);
+  padding: rem(4px);
+  background: theme('colors.white');
+
+  .bottom-sheet--fixed-search & {
+    top: 0;
+    position: sticky;
+    z-index: 1;
+    left: theme('spacing.6');
+    right: theme('spacing.6');
+  }
+}
+
+.bottom-sheet__options {
+  min-height: 6rem;
+}
+
+.bottom-sheet__option {
+  display: flex;
+  cursor: pointer;
+  position: relative;
+  box-sizing: content-box;
+  justify-content: center;
+  padding: rem(10px) rem(16px);
+  color: theme('colors.gray.900');
+
+  &:not(:last-child) {
+    border-bottom: 1px solid theme('colors.gray.200');
+  }
+
+  &--multiselect {
+    padding: rem(10px) rem(26px);
+  }
+
+  &--selected {
+    .bottom-sheet__option__checkbox {
+      color: theme('colors.teal.600');
+    }
+  }
+
+  &--disabled {
+    cursor: default;
+    color: theme('colors.gray.500');
+
+    .bottom-sheet__option__checkbox {
+      color: theme('colors.gray.100');
+    }
+  }
+
+  &__checkbox {
+    top: 50%;
+    right: 8px;
+    transform: translateY(-50%);
+    position: absolute;
+    color: theme('colors.gray.200');
+  }
+}
+
+.bottom-sheet__no-option {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: theme('colors.gray.300');
+}

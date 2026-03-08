@@ -1,0 +1,7 @@
+export { default as ContractGuaranteePage } from './pages/ContractGuarantee'
+export { default as PhoneTrackingCodePage } from './pages/PhoneTrackingCode'
+export { default as PhonePropertyConsult } from './pages/PhonePropertyConsult'
+export { default as BasalamPage } from './pages/Basalam'
+export { default as DownloadAppPage } from './pages/Download'
+export { default as MashinetLandingPage } from './pages/mashinet/Mashinet'
+export { default as TrustPage } from './pages/Trust'

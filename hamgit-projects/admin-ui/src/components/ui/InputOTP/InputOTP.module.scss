@@ -1,0 +1,23 @@
+.wrapper {
+  display: flex;
+  direction: ltr;
+}
+
+.input {
+  input {
+    text-align: center !important;
+    font-size: rem(24px);
+    line-height: rem(30px);
+    // padding-top: 0;
+    // padding-bottom: 0;
+  }
+
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+  }
+
+  &:not(:last-child) {
+    margin-right: 1rem;
+  }
+}

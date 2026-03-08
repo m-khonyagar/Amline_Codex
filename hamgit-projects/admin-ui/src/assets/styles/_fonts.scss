@@ -1,0 +1,40 @@
+$PrefixPath: '../fonts';
+
+@mixin fontDef($FontType: 'regular', $FontFamily: 'IRANSansX') {
+  font-family: '#{$FontFamily}';
+  font-style: normal;
+  src:
+    url('#{$PrefixPath}/iransans/IRANSansX-#{$FontType}.woff2') format('woff2'),
+    url('#{$PrefixPath}/iransans/IRANSansX-#{$FontType}.woff') format('woff');
+}
+
+@font-face {
+  @include fontDef('Light');
+  font-weight: 300;
+}
+
+@font-face {
+  @include fontDef('Regular');
+  font-weight: normal;
+  // font-weight: 400;
+}
+
+@font-face {
+  @include fontDef('Medium');
+  font-weight: 500;
+}
+
+@font-face {
+  @include fontDef('DemiBold');
+  font-weight: 600;
+}
+
+@font-face {
+  @include fontDef('Bold');
+  font-weight: bold;
+  // font-weight: 700;
+}
+
+.fa {
+  font-feature-settings: 'ss02';
+}

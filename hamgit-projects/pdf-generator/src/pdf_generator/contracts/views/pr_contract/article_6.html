@@ -1,0 +1,46 @@
+{% for clause_number, sub_clauses in group_clauses %}
+    <section class="clause">
+        {% for sub_clause in sub_clauses %}
+
+        {% if loop.index == 1 %}
+        <h2>ماده {{ clause_number }} - {{ sub_clause.clause_name }}</h2>
+        {% endif %}
+
+        {% if sub_clause.subclause_name %}
+        <h3 class="{{'mt-3' if loop.index != 1 else ''}}">
+            بند {{ sub_clause.subclause_number | number_to_persian_ordinal }}: {{ sub_clause.subclause_name}}
+        </h3>
+
+        <p>
+            {{
+            sub_clause.body
+            | replace("<property_type>", "<span class='teal-dark'>" + property.property_type | translate + "</span>")
+            | replace("<landlord_penalty_fee>", "<span class='teal-dark'>" + contract.landlord_penalty_fee | separate_number + "</span>")
+            | replace("<tenant_penalty_fee>", "<span class='teal-dark'>" + contract.tenant_penalty_fee | separate_number + "</span>")
+            | replace("<tenant_count>", "<span class='teal-dark'>" + contract.tenant_family_members_count | string + "</span>")
+            | replace("<contract_duration>", "<span class='teal-dark'>" + contract.contract_duration | string + "</span>")
+            | replace("\n", "<br/>")
+            | replace("تبصره:", '<br/><span class="semi-bold">تبصره: </span>')
+            }}
+        </p>
+        {% else %}
+        <div class="{{'mt-3' if loop.index != 1 else ''}}">
+            <p>
+            بند {{ sub_clause.subclause_number | number_to_persian_ordinal }}:
+            {{
+            sub_clause.body
+            | replace("<property_type>", "<span class='teal-dark'>" + property.property_type | translate + "</span>")
+            | replace("<landlord_penalty_fee>", "<span class='teal-dark'>" + contract.landlord_penalty_fee | separate_number + "</span>")
+            | replace("<tenant_penalty_fee>", "<span class='teal-dark'>" + contract.tenant_penalty_fee | separate_number + "</span>")
+            | replace("<tenant_count>", "<span class='teal-dark'>" + contract.tenant_family_members_count | string + "</span>")
+            | replace("<contract_duration>", "<span class='teal-dark'>" + contract.contract_duration | string + "</span>")
+            | replace("\n", "<br/>")
+            | replace("تبصره:", '<br/><span class="semi-bold">تبصره: </span>')
+            }}
+            </p>
+        </div>
+
+        {% endif %}
+        {% endfor %}
+    </section>
+{% endfor %}

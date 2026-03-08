@@ -1,0 +1,20 @@
+<section class="clause">
+    <h2>ماده 3_ مدت اجاره</h2>
+
+    <p>✓ مدت اجاره برابر با {{ (contract.end_date - contract.start_date).days }} روز می باشد</p>
+
+    <table class="mt-3">
+        <tr>
+            <th>شروع اجاره</th>
+            <th>پایان اجاره</th>
+            <th>عقد قرارداد</th>
+            <th>تحویل ملک</th>
+        </tr>
+        <tr>
+            <td class="teal">{{ contract.start_date | gregorian_to_jalali_date }}</td>
+            <td class="teal">{{ contract.end_date | gregorian_to_jalali_date }}</td>
+            <td class="teal">{{ contract.date | gregorian_to_jalali_date }}</td>
+            <td class="teal">{{ contract.handover_date | gregorian_to_jalali_date }}</td>
+        </tr>
+    </table>
+</section>

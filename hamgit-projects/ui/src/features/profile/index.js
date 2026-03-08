@@ -1,0 +1,7 @@
+export { default as AboutUsPage } from './pages/AboutUs'
+export { default as ProfilePage } from './pages/Profile'
+export { default as MyAccount } from './pages/MyAccount'
+export { default as Terms } from '../contract/pages/Terms'
+export { default as PaymentHistory } from '../contract/pages/PaymentHistory'
+export { default as ProfilePaymentsPage } from './pages/Payments'
+export { default as ProfileCard } from './components/ProfileCard'

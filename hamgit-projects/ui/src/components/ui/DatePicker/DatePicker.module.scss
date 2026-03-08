@@ -1,0 +1,30 @@
+.date-picker {
+  position: relative;
+  display: flex;
+  width: 100%;
+  height: 17rem;
+  margin-left: auto;
+  margin-right: auto;
+
+  &:before,
+  &:after {
+    position: absolute;
+    left: 0;
+    right: 0;
+    content: '';
+    display: block;
+    height: calc(50% - 60px / 2);
+    z-index: 1;
+    pointer-events: none;
+  }
+  &:before {
+    top: -0.5px;
+    border-bottom: 0.5px solid rgba(49, 49, 49, 0.3);
+    background: linear-gradient(to top, rgba(255, 255, 255, 0.65) 0%, rgba(255, 255, 255, 1) 100%);
+  }
+  &:after {
+    bottom: -0.5px;
+    border-top: 0.5px solid rgba(49, 49, 49, 0.3);
+    background: linear-gradient(to bottom, rgba(255, 255, 255, 0.65) 0%, rgb(255, 255, 255) 100%);
+  }
+}

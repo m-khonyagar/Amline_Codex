@@ -1,0 +1,30 @@
+.container {
+  display: block;
+}
+
+.text {
+  margin: 0;
+  display: inline-block;
+  white-space: pre-line;
+  height: 50px;
+  line-height: 25px;
+  text-align: justify;
+  overflow: hidden;
+  position: relative;
+  font-size: 12px;
+}
+
+.btn {
+  display: flex;
+  cursor: pointer;
+  color: theme('colors.blue.600');
+  font-size: 0.875em;
+}
+
+.overlay {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  background: linear-gradient(to top, rgba(255, 255, 255, 0.65) 0%, rgba(255, 255, 255, 1) 100%);
+}

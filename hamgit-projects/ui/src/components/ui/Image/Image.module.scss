@@ -1,0 +1,29 @@
+.image {
+  position: relative;
+  background-color: transparent;
+
+  &__img {
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    position: absolute;
+  }
+
+  &__placeholder {
+    background-color: whitesmoke;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    overflow: hidden;
+  }
+
+  &__placeholder-img {
+    width: 30%;
+    margin: auto;
+  }
+}

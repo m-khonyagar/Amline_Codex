@@ -1,0 +1,17 @@
+<html lang="fa" dir="rtl">
+
+<head>
+    <meta charset="utf-8">
+    <title>Contract</title>
+    <style>
+        @page {
+            background: url("{% if contract.tracking_code %}https://amline.ir/blog/wp-content/uploads/2025/10/watermark.png{% else %}https://amline.ir/blog/wp-content/uploads/2025/10/tracking-code-watermark.png{% endif %}") no-repeat center center;
+        }
+    </style>
+</head>
+
+<body>
+    {% block content %}{% endblock %}
+</body>
+
+</html>

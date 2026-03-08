@@ -1,0 +1,56 @@
+{
+  "extends": [
+    "next/core-web-vitals",
+    "airbnb",
+    "plugin:prettier/recommended",
+    "eslint-config-prettier",
+    "plugin:storybook/recommended"
+  ],
+  "plugins": ["prettier", "@tanstack/query"],
+  "rules": {
+    "react/react-in-jsx-scope": "off",
+    "react/jsx-props-no-spreading": "off",
+    "import/no-unresolved": "off",
+    "react/prop-types": "off",
+    "react/no-array-index-key": "warn",
+    "react/require-default-props": "off",
+    "no-underscore-dangle": "off",
+    "import/prefer-default-export": "off",
+    "no-unused-vars": [
+      "warn",
+      {
+        "ignoreRestSiblings": false,
+        "argsIgnorePattern": "^_",
+        "varsIgnorePattern": "^_"
+      }
+    ],
+    "no-console": [
+      "warn",
+      {
+        "allow": ["warn", "error"]
+      }
+    ],
+    "import/extensions": [
+      "error",
+      "ignorePackages",
+      {
+        "": "never",
+        "js": "never",
+        "jsx": "never",
+        "ts": "never",
+        "tsx": "never"
+      }
+    ],
+    "no-restricted-imports": [
+      "error",
+      {
+        "patterns": [
+          {
+            "group": ["@/features/*/*"],
+            "message": "don't import form inside features."
+          }
+        ]
+      }
+    ]
+  }
+}
