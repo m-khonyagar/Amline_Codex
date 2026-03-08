@@ -84,6 +84,11 @@ class ApprovalStore:
         data.sort(key=lambda x: x["created_at"])
         return data
 
+    def list_pending(self) -> list[dict[str, Any]]:
+        data = [r.to_dict() for r in self._requests.values() if r.status == "pending"]
+        data.sort(key=lambda x: x["created_at"])
+        return data
+
     def has_pending(self, task_id: str) -> bool:
         return any(r.task_id == task_id and r.status == "pending" for r in self._requests.values())
 

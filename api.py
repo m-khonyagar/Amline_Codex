@@ -2,6 +2,7 @@ from __future__ import annotations
 
 import uuid
 from datetime import UTC, datetime
+from typing import Literal
 
 from fastapi import FastAPI, HTTPException
 from openai import OpenAIError
@@ -18,10 +19,10 @@ class TaskCreateRequest(BaseModel):
 
 
 class DecisionRequest(BaseModel):
-    decision: str
+    decision: Literal["approve", "deny"]
 
 
-app = FastAPI(title="Agent Mode API", version="0.2.1")
+app = FastAPI(title="Agent Mode API", version="0.3.0")
 approval_store = ApprovalStore()
 
 # In-memory task store for MVP.
@@ -69,6 +70,12 @@ def health() -> dict:
     return {"ok": True}
 
 
+@app.get("/tasks")
+def list_tasks() -> dict:
+    data = sorted(TASKS.values(), key=lambda t: t["created_at"], reverse=True)
+    return {"tasks": data, "count": len(data)}
+
+
 @app.post("/tasks")
 def create_task(req: TaskCreateRequest) -> dict:
     task_id = str(uuid.uuid4())
@@ -106,14 +113,18 @@ def list_task_approvals(task_id: str) -> dict:
     return {"task_id": task_id, "approvals": approval_store.list_for_task(task_id)}
 
 
+@app.get("/approvals/pending")
+def list_pending_approvals() -> dict:
+    pending = approval_store.list_pending()
+    return {"approvals": pending, "count": len(pending)}
+
+
 @app.post("/approvals/{approval_id}")
 def decide_approval(approval_id: str, req: DecisionRequest) -> dict:
     try:
         return approval_store.decide(approval_id, req.decision)
     except KeyError as exc:
         raise HTTPException(status_code=404, detail=str(exc)) from exc
-    except ValueError as exc:
-        raise HTTPException(status_code=400, detail=str(exc)) from exc
 
 
 @app.post("/tasks/{task_id}/resume")
@@ -121,6 +132,13 @@ def resume_task(task_id: str) -> dict:
     task = TASKS.get(task_id)
     if task is None:
         raise HTTPException(status_code=404, detail="Task not found")
+
+    if approval_store.has_pending(task_id):
+        raise HTTPException(status_code=409, detail="Task has pending approvals")
+
+    if approval_store.has_denied(task_id):
+        raise HTTPException(status_code=409, detail="Task has denied approvals")
+
     task["status"] = "running"
     task["updated_at"] = _now()
     return _run_task_or_http_error(task)

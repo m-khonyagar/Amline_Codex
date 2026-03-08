@@ -40,31 +40,43 @@ Run server:
 uvicorn api:app --reload --port 8000
 ```
 
-### 1) Create a task
+### Create task
 ```bash
 curl -X POST http://127.0.0.1:8000/tasks \
   -H "Content-Type: application/json" \
   -d '{"prompt":"در workspace یک فایل report.txt بساز"}'
 ```
 
-If model asks for a sensitive action (`browser_click`, `local_write_file`, `local_run_python_script`) the task goes to `awaiting_approval`.
+### List tasks
+```bash
+curl http://127.0.0.1:8000/tasks
+```
 
-### 2) List task approvals
+### List approvals of a task
 ```bash
 curl http://127.0.0.1:8000/tasks/<TASK_ID>/approvals
 ```
 
-### 3) Approve or deny
+### List all pending approvals
+```bash
+curl http://127.0.0.1:8000/approvals/pending
+```
+
+### Approve or deny one approval
 ```bash
 curl -X POST http://127.0.0.1:8000/approvals/<APPROVAL_ID> \
   -H "Content-Type: application/json" \
   -d '{"decision":"approve"}'
 ```
 
-### 4) Resume task
+### Resume task
 ```bash
 curl -X POST http://127.0.0.1:8000/tasks/<TASK_ID>/resume
 ```
+
+Notes:
+- `resume` returns `409` if there is still pending or denied approval.
+- Sensitive tools requiring approval: `browser_click`, `local_write_file`, `local_run_python_script`.
 
 ## Policy env vars
 - `WORKSPACE_ROOT=./workspace`
