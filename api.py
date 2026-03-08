@@ -4,6 +4,7 @@ import uuid
 from datetime import UTC, datetime
 
 from fastapi import FastAPI, HTTPException
+from openai import OpenAIError
 from pydantic import BaseModel, Field
 
 from agent import AgentRunner
@@ -20,7 +21,7 @@ class DecisionRequest(BaseModel):
     decision: str
 
 
-app = FastAPI(title="Agent Mode API", version="0.2.0")
+app = FastAPI(title="Agent Mode API", version="0.2.1")
 approval_store = ApprovalStore()
 
 # In-memory task store for MVP.
@@ -54,6 +55,15 @@ def _run_task(task: dict) -> dict:
     return task
 
 
+def _run_task_or_http_error(task: dict) -> dict:
+    try:
+        return _run_task(task)
+    except OpenAIError as exc:
+        raise HTTPException(status_code=400, detail=f"OpenAI client error: {exc}") from exc
+    except Exception as exc:  # noqa: BLE001
+        raise HTTPException(status_code=500, detail=f"Task execution failed: {exc}") from exc
+
+
 @app.get("/health")
 def health() -> dict:
     return {"ok": True}
@@ -75,7 +85,7 @@ def create_task(req: TaskCreateRequest) -> dict:
         "last_response_id": None,
     }
     TASKS[task_id] = task
-    return _run_task(task)
+    return _run_task_or_http_error(task)
 
 
 @app.get("/tasks/{task_id}")
@@ -113,4 +123,4 @@ def resume_task(task_id: str) -> dict:
         raise HTTPException(status_code=404, detail="Task not found")
     task["status"] = "running"
     task["updated_at"] = _now()
-    return _run_task(task)
+    return _run_task_or_http_error(task)
