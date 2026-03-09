@@ -1,8 +1,10 @@
+import type { ReactNode } from "react";
+
 import { AppHeader } from "@/components/layout/app-header";
 import { AppSidebar } from "@/components/layout/app-sidebar";
 import { requireUser } from "@/lib/auth/session";
 
-export default async function AppLayout({ children }: { children: React.ReactNode }) {
+export default async function AppLayout({ children }: { children: ReactNode }) {
   await requireUser();
 
   return (

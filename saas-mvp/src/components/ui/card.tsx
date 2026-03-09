@@ -1,10 +1,11 @@
+import type { ReactNode } from "react";
 import { cn } from "@/lib/utils";
 
 type CardProps = {
   title?: string;
   description?: string;
   className?: string;
-  children: React.ReactNode;
+  children: ReactNode;
 };
 
 export function Card({ title, description, className, children }: CardProps) {
@@ -16,3 +17,4 @@ export function Card({ title, description, className, children }: CardProps) {
     </section>
   );
 }
+
