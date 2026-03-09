@@ -1,90 +1,261 @@
-const taskListEl = document.getElementById("taskList");
+const state = {
+  sessions: [],
+  activeSessionId: null,
+  activeSession: null,
+  mode: "agent",
+  pendingAttachmentIds: [],
+};
+
+const sessionListEl = document.getElementById("sessionList");
+const messagePaneEl = document.getElementById("messagePane");
 const approvalListEl = document.getElementById("approvalList");
-const createResultEl = document.getElementById("createResult");
+const uploadListEl = document.getElementById("uploadList");
+const messageInputEl = document.getElementById("messageInput");
+const fileInputEl = document.getElementById("fileInput");
+const attachmentBarEl = document.getElementById("attachmentBar");
 const healthBadgeEl = document.getElementById("healthBadge");
-const refreshBtn = document.getElementById("refreshBtn");
-const mTotal = document.getElementById("mTotal");
-const mPending = document.getElementById("mPending");
-const mBlocked = document.getElementById("mBlocked");
-const taskTpl = document.getElementById("taskItemTemplate");
-const approvalTpl = document.getElementById("approvalItemTemplate");
+const modelInputEl = document.getElementById("modelInput");
 
-const STATUS_LABELS = { completed:"تکمیل‌شده", awaiting_approval:"در انتظار تایید", blocked:"بلوکه", failed:"خطا", running:"در حال اجرا", max_turns_reached:"پایان سقف نوبت" };
+const sessionTpl = document.getElementById("sessionItemTpl");
+const msgTpl = document.getElementById("messageTpl");
+const approvalTpl = document.getElementById("approvalTpl");
 
-const jsonDump = (v) => JSON.stringify(v, null, 2);
-async function api(path, opts = {}) {
-  const res = await fetch(path, { headers: { "Content-Type": "application/json" }, ...opts });
-  const contentType = res.headers.get("content-type") || "";
-  const body = contentType.includes("application/json") ? await res.json() : await res.text();
-  if (!res.ok) throw new Error(typeof body === "string" ? body : body.detail || jsonDump(body));
+const fmt = (d) => new Date(d).toLocaleString("fa-IR");
+
+async function api(path, options = {}) {
+  const init = { ...options };
+  if (!(init.body instanceof FormData)) {
+    init.headers = { "Content-Type": "application/json", ...(init.headers || {}) };
+  }
+
+  const res = await fetch(path, init);
+  const type = res.headers.get("content-type") || "";
+  const body = type.includes("application/json") ? await res.json() : await res.text();
+  if (!res.ok) {
+    throw new Error(typeof body === "string" ? body : body.detail || JSON.stringify(body));
+  }
   return body;
 }
-function statusBadge(el, status) { el.textContent = STATUS_LABELS[status] || status; el.className = `badge ${status}`; }
 
-async function checkHealth(){ try{ await api("/health"); healthBadgeEl.textContent="آنلاین"; healthBadgeEl.className="badge online";}catch{healthBadgeEl.textContent="آفلاین"; healthBadgeEl.className="badge failed";}}
-
-async function fetchAll(){
-  const [tasksRes, approvalsRes] = await Promise.all([api("/tasks"), api("/approvals/pending")]);
-  renderTasks(tasksRes.tasks || []); renderApprovals(approvalsRes.approvals || []);
-  mTotal.textContent = String(tasksRes.count || 0); mPending.textContent = String(approvalsRes.count || 0);
-  mBlocked.textContent = String((tasksRes.tasks || []).filter((t)=>t.status==="blocked").length);
-}
-
-function renderTasks(tasks){
-  taskListEl.innerHTML="";
-  if(!tasks.length){ taskListEl.innerHTML='<p class="prompt">هنوز تسکی ثبت نشده است.</p>'; return; }
-  for(const task of tasks){
-    const node = taskTpl.content.firstElementChild.cloneNode(true);
-    node.querySelector("h3").textContent = task.id;
-    statusBadge(node.querySelector(".badge"), task.status);
-    node.querySelector(".prompt").textContent = task.prompt;
-    node.querySelector(".output").textContent = task.output_text || "(هنوز خروجی ثبت نشده است)";
-    const actions = node.querySelector(".actions");
-
-    if(task.status === "awaiting_approval"){
-      const info = document.createElement("button");
-      info.className = "btn-ghost"; info.textContent = "نمایش تاییدها"; info.onclick = ()=>window.location.hash = "approvals";
-      actions.appendChild(info);
-    }
-    if(!["completed","failed","blocked"].includes(task.status)){
-      const resumeBtn = document.createElement("button");
-      resumeBtn.className = "btn-primary"; resumeBtn.textContent = "ادامه اجرا";
-      resumeBtn.onclick = async ()=>{ resumeBtn.disabled=true; try{ await api(`/tasks/${task.id}/resume`, {method:"POST"}); await fetchAll(); }catch(err){ alert(`ادامه اجرا ناموفق بود: ${err.message}`);} finally{ resumeBtn.disabled=false; } };
-      actions.appendChild(resumeBtn);
-    }
-    taskListEl.appendChild(node);
+function renderSessions() {
+  sessionListEl.innerHTML = "";
+  for (const s of state.sessions) {
+    const item = sessionTpl.content.firstElementChild.cloneNode(true);
+    item.querySelector("strong").textContent = s.title;
+    item.querySelector("small").textContent = `${s.message_count} پیام • ${fmt(s.updated_at)}`;
+    if (s.id === state.activeSessionId) item.classList.add("active");
+    item.onclick = () => loadSession(s.id);
+    sessionListEl.appendChild(item);
   }
 }
 
-function renderApprovals(items){
-  approvalListEl.innerHTML="";
-  if(!items.length){ approvalListEl.innerHTML='<p class="prompt">در حال حاضر تایید حساسی نداریم.</p>'; return; }
-  for(const approval of items){
-    const node = approvalTpl.content.firstElementChild.cloneNode(true);
-    node.querySelector("h3").textContent = `${approval.tool_name} • ${approval.id}`;
-    node.querySelector("pre").textContent = jsonDump(approval.args);
-    const approveBtn = node.querySelector(".btn-approve");
-    const denyBtn = node.querySelector(".btn-deny");
+function renderMessages() {
+  messagePaneEl.innerHTML = "";
+  const session = state.activeSession;
+  if (!session || !session.messages.length) {
+    messagePaneEl.innerHTML = '<div class="empty-state">یک پیام بفرست تا گفتگو شروع شود.</div>';
+    return;
+  }
 
-    approveBtn.onclick = async ()=>{ approveBtn.disabled=true; try{ await api(`/approvals/${approval.id}`, { method:"POST", body: JSON.stringify({decision:"approve"}) }); await fetchAll(); }catch(err){ alert(`تایید ناموفق بود: ${err.message}`);} finally{ approveBtn.disabled=false; } };
-    denyBtn.onclick = async ()=>{ denyBtn.disabled=true; try{ await api(`/approvals/${approval.id}`, { method:"POST", body: JSON.stringify({decision:"deny"}) }); await fetchAll(); }catch(err){ alert(`رد ناموفق بود: ${err.message}`);} finally{ denyBtn.disabled=false; } };
+  for (const m of session.messages) {
+    const node = msgTpl.content.firstElementChild.cloneNode(true);
+    node.classList.add(m.role);
+    node.querySelector(".msg-role").textContent = m.role === "user" ? "شما" : "دستیار";
+    node.querySelector(".msg-content").textContent = m.content;
+
+    const metaEl = node.querySelector(".msg-meta");
+    if (m.attachments && m.attachments.length) {
+      metaEl.textContent = `ضمیمه: ${m.attachments.map((a) => a.filename).join("، ")}`;
+    }
+    if (m.meta && m.meta.mode === "agent") {
+      const status = m.meta.task_status || "-";
+      metaEl.textContent = `Agent Mode • وضعیت: ${status}${m.meta.task_id ? ` • Task: ${m.meta.task_id}` : ""}`;
+    }
+
+    messagePaneEl.appendChild(node);
+  }
+
+  messagePaneEl.scrollTop = messagePaneEl.scrollHeight;
+}
+
+function renderAttachmentBar() {
+  attachmentBarEl.innerHTML = "";
+  if (!state.pendingAttachmentIds.length) return;
+  for (const id of state.pendingAttachmentIds) {
+    const chip = document.createElement("span");
+    chip.className = "attachment-chip";
+    chip.textContent = `ضمیمه آماده: ${id.slice(0, 8)}...`;
+    attachmentBarEl.appendChild(chip);
+  }
+}
+
+function renderUploads(files = []) {
+  uploadListEl.innerHTML = "";
+  if (!files.length) {
+    uploadListEl.innerHTML = '<div class="upload-item">هنوز فایلی آپلود نشده است.</div>';
+    return;
+  }
+  for (const f of files) {
+    const row = document.createElement("div");
+    row.className = "upload-item";
+    row.innerHTML = `<div>${f.filename}</div><small>${Math.round((f.size || 0) / 1024)}KB</small> <a href="/uploads/${f.id}/download" target="_blank">دانلود</a>`;
+    uploadListEl.appendChild(row);
+  }
+}
+
+async function refreshApprovals() {
+  const data = await api("/approvals/pending");
+  approvalListEl.innerHTML = "";
+
+  if (!data.approvals.length) {
+    approvalListEl.innerHTML = '<div class="upload-item">تایید در انتظار نداریم.</div>';
+    return;
+  }
+
+  for (const a of data.approvals) {
+    const node = approvalTpl.content.firstElementChild.cloneNode(true);
+    node.querySelector(".approval-title").textContent = `${a.tool_name} • ${a.id}`;
+    node.querySelector(".approval-args").textContent = JSON.stringify(a.args, null, 2);
+
+    node.querySelector(".btn-ok").onclick = async () => {
+      await api(`/approvals/${a.id}`, { method: "POST", body: JSON.stringify({ decision: "approve" }) });
+      await Promise.all([refreshApprovals(), refreshSessions()]);
+      if (state.activeSessionId) await loadSession(state.activeSessionId);
+    };
+
+    node.querySelector(".btn-no").onclick = async () => {
+      await api(`/approvals/${a.id}`, { method: "POST", body: JSON.stringify({ decision: "deny" }) });
+      await Promise.all([refreshApprovals(), refreshSessions()]);
+      if (state.activeSessionId) await loadSession(state.activeSessionId);
+    };
 
     approvalListEl.appendChild(node);
   }
 }
 
-document.getElementById("taskForm").addEventListener("submit", async (e)=>{
-  e.preventDefault();
-  const prompt = document.getElementById("prompt").value.trim();
-  const model = document.getElementById("model").value.trim() || "gpt-4.1";
-  const maxTurns = Number(document.getElementById("maxTurns").value || 12);
-  if(!prompt){ alert("لطفاً متن درخواست را وارد کن."); return; }
-  try{
-    const created = await api("/tasks", { method:"POST", body: JSON.stringify({prompt, model, max_turns:maxTurns}) });
-    createResultEl.textContent = jsonDump(created);
-    await fetchAll();
-  }catch(err){ createResultEl.textContent = `خطا: ${err.message}`; }
+async function refreshHealth() {
+  try {
+    await api("/health");
+    healthBadgeEl.className = "badge ok";
+    healthBadgeEl.textContent = "آنلاین";
+  } catch {
+    healthBadgeEl.className = "badge off";
+    healthBadgeEl.textContent = "آفلاین";
+  }
+}
+
+async function refreshUploads() {
+  const data = await api("/uploads");
+  renderUploads(data.files || []);
+}
+
+async function refreshSessions() {
+  const data = await api("/chat/sessions");
+  state.sessions = data.sessions || [];
+  renderSessions();
+  if (!state.activeSessionId && state.sessions.length) {
+    await loadSession(state.sessions[0].id);
+  }
+}
+
+async function loadSession(sessionId) {
+  const session = await api(`/chat/sessions/${sessionId}`);
+  state.activeSessionId = session.id;
+  state.activeSession = session;
+  renderSessions();
+  renderMessages();
+}
+
+async function ensureSession() {
+  if (state.activeSessionId) return state.activeSessionId;
+  const created = await api("/chat/sessions", { method: "POST", body: JSON.stringify({}) });
+  await refreshSessions();
+  await loadSession(created.id);
+  return created.id;
+}
+
+async function sendMessage() {
+  const content = messageInputEl.value.trim();
+  if (!content) return;
+  const sessionId = await ensureSession();
+
+  const payload = {
+    content,
+    mode: state.mode,
+    model: modelInputEl.value.trim() || "gpt-4.1",
+    max_turns: 12,
+    attachment_ids: state.pendingAttachmentIds,
+  };
+
+  document.getElementById("sendBtn").disabled = true;
+  try {
+    const res = await api(`/chat/sessions/${sessionId}/messages`, {
+      method: "POST",
+      body: JSON.stringify(payload),
+    });
+    state.activeSession = res.session;
+    messageInputEl.value = "";
+    state.pendingAttachmentIds = [];
+    renderAttachmentBar();
+    renderMessages();
+    await Promise.all([refreshSessions(), refreshApprovals()]);
+  } catch (err) {
+    alert(`خطا در ارسال پیام: ${err.message}`);
+  } finally {
+    document.getElementById("sendBtn").disabled = false;
+  }
+}
+
+async function uploadSelectedFiles() {
+  const files = Array.from(fileInputEl.files || []);
+  if (!files.length) return;
+
+  const form = new FormData();
+  for (const f of files) form.append("files", f);
+
+  try {
+    const res = await api("/uploads", { method: "POST", body: form });
+    for (const f of res.files || []) {
+      state.pendingAttachmentIds.push(f.id);
+    }
+    renderAttachmentBar();
+    await refreshUploads();
+  } catch (err) {
+    alert(`خطا در آپلود: ${err.message}`);
+  }
+}
+
+document.getElementById("newChatBtn").onclick = async () => {
+  const created = await api("/chat/sessions", { method: "POST", body: JSON.stringify({}) });
+  await refreshSessions();
+  await loadSession(created.id);
+};
+
+fileInputEl.onchange = uploadSelectedFiles;
+document.getElementById("sendBtn").onclick = sendMessage;
+messageInputEl.addEventListener("keydown", (e) => {
+  if (e.key === "Enter" && !e.shiftKey) {
+    e.preventDefault();
+    sendMessage();
+  }
 });
 
-refreshBtn.addEventListener("click", fetchAll);
-(async ()=>{ await checkHealth(); await fetchAll(); setInterval(fetchAll, 8000); })();
+for (const btn of document.querySelectorAll(".mode-btn")) {
+  btn.onclick = () => {
+    state.mode = btn.dataset.mode;
+    for (const b of document.querySelectorAll(".mode-btn")) b.classList.remove("active");
+    btn.classList.add("active");
+  };
+}
+
+(async () => {
+  await refreshHealth();
+  await Promise.all([refreshSessions(), refreshApprovals(), refreshUploads()]);
+  setInterval(async () => {
+    await Promise.all([refreshHealth(), refreshApprovals(), refreshSessions()]);
+    if (state.activeSessionId) {
+      const active = state.sessions.find((x) => x.id === state.activeSessionId);
+      if (active) await loadSession(state.activeSessionId);
+    }
+  }, 8000);
+})();
