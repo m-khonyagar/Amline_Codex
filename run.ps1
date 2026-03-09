@@ -3,6 +3,7 @@ param(
 )
 
 $ErrorActionPreference = "Stop"
+Set-Location $PSScriptRoot
 
 if (!(Test-Path ".venv")) {
     python -m venv .venv
@@ -25,6 +26,10 @@ if (!(Test-Path "workspace")) {
     New-Item -ItemType Directory workspace | Out-Null
 }
 
-Write-Host "Starting API on http://127.0.0.1:8000"
-Write-Host "If OPENAI_API_KEY is missing in .env, /tasks returns HTTP 400 with a clear message."
-& ".\.venv\Scripts\uvicorn.exe" api:app --host 127.0.0.1 --port 8000 --reload
+Get-CimInstance Win32_Process |
+    Where-Object { $_.Name -match 'python|uvicorn' -and $_.CommandLine -match 'api:app' } |
+    ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }
+
+Write-Host "Starting API + Chat UI on http://127.0.0.1:8000"
+Write-Host "Working directory: $PWD"
+& $python -m uvicorn api:app --host 127.0.0.1 --port 8000 --reload
