@@ -1,5 +1,6 @@
 import { notFound } from "next/navigation";
 
+import { AttachmentUploadForm } from "@/components/forms/attachment-upload-form";
 import { Card } from "@/components/ui/card";
 import { StatusBadge } from "@/components/ui/status-badge";
 import { prisma } from "@/lib/db/prisma";
@@ -45,8 +46,9 @@ export default async function TaskDetailsPage({ params }: { params: Promise<{ ta
         </Card>
 
         <Card title="اسناد و پیوست‌ها" className="lg:col-span-1">
-          <div className="space-y-2 text-sm">
-            {task.attachments.length === 0 ? <p className="text-slate-500">فایلی متصل نشده است.</p> : task.attachments.map((a) => <p key={a.id}>{a.fileName}</p>)}
+          <AttachmentUploadForm taskId={task.id} projectId={task.projectId} />
+          <div className="mt-3 space-y-2 text-sm">
+            {task.attachments.length === 0 ? <p className="text-slate-500">فایلی متصل نشده است.</p> : task.attachments.map((a) => <a key={a.id} href={a.fileUrl} className="block rounded-lg border border-slate-200 p-2">{a.fileName}</a>)}
           </div>
         </Card>
       </div>

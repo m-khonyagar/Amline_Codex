@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
 
+import { AttachmentUploadForm } from "@/components/forms/attachment-upload-form";
 import { TaskCreateForm } from "@/components/forms/task-create-form";
 import { Card } from "@/components/ui/card";
 import { StatusBadge } from "@/components/ui/status-badge";
@@ -14,7 +15,8 @@ export default async function ProjectDetailsPage({ params }: { params: Promise<{
     include: {
       members: { include: { user: { select: { id: true, fullName: true } } } },
       taskLists: true,
-      tasks: { include: { assignee: true }, orderBy: { updatedAt: "desc" } }
+      tasks: { include: { assignee: true }, orderBy: { updatedAt: "desc" } },
+      attachments: { orderBy: { createdAt: "desc" }, take: 8 }
     }
   });
 
@@ -48,6 +50,15 @@ export default async function ProjectDetailsPage({ params }: { params: Promise<{
           </div>
         </Card>
       </div>
+
+      <Card title="اسناد پروژه">
+        <div className="grid gap-4 lg:grid-cols-2">
+          <AttachmentUploadForm projectId={project.id} />
+          <div className="space-y-2">
+            {project.attachments.length === 0 ? <p className="text-sm text-slate-500">هنوز سندی آپلود نشده است.</p> : project.attachments.map((file) => <a key={file.id} className="block rounded-xl border border-slate-200 p-2 text-sm" href={file.fileUrl} target="_blank">{file.fileName}</a>)}
+          </div>
+        </div>
+      </Card>
     </div>
   );
 }
