@@ -2,9 +2,12 @@ from __future__ import annotations
 
 import uuid
 from datetime import UTC, datetime
+from pathlib import Path
 from typing import Literal
 
 from fastapi import FastAPI, HTTPException
+from fastapi.responses import FileResponse
+from fastapi.staticfiles import StaticFiles
 from openai import OpenAIError
 from pydantic import BaseModel, Field
 
@@ -22,12 +25,15 @@ class DecisionRequest(BaseModel):
     decision: Literal["approve", "deny"]
 
 
-app = FastAPI(title="Agent Mode API", version="0.4.0")
+BASE_DIR = Path(__file__).resolve().parent
+WEB_DIR = BASE_DIR / "web"
+
+app = FastAPI(title="Agent Mode API", version="0.6.0")
+app.mount("/static", StaticFiles(directory=str(WEB_DIR)), name="static")
 approval_store = ApprovalStore()
 
 # In-memory task store for MVP.
 TASKS: dict[str, dict] = {}
-
 
 TERMINAL_STATUSES = {"completed", "blocked", "failed"}
 
@@ -75,6 +81,11 @@ def _run_task_or_http_error(task: dict) -> dict:
     except Exception as exc:  # noqa: BLE001
         _set_task_status(task, "failed", f"Task execution failed: {exc}")
         raise HTTPException(status_code=500, detail=f"Task execution failed: {exc}") from exc
+
+
+@app.get("/", include_in_schema=False)
+def frontend_index() -> FileResponse:
+    return FileResponse(WEB_DIR / "index.html")
 
 
 @app.get("/health")
