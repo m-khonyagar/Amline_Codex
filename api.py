@@ -1,14 +1,15 @@
 from __future__ import annotations
 
+import os
 import uuid
 from datetime import UTC, datetime
 from pathlib import Path
 from typing import Literal
 
-from fastapi import FastAPI, HTTPException
+from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
-from openai import OpenAIError
+from openai import OpenAI, OpenAIError
 from pydantic import BaseModel, Field
 
 from agent import AgentRunner
@@ -25,15 +26,33 @@ class DecisionRequest(BaseModel):
     decision: Literal["approve", "deny"]
 
 
+class ChatSessionCreateRequest(BaseModel):
+    title: str | None = None
+
+
+class ChatMessageCreateRequest(BaseModel):
+    content: str = Field(min_length=1)
+    model: str = "gpt-4.1"
+    max_turns: int = Field(default=12, ge=1, le=50)
+    mode: Literal["agent", "chat"] = "agent"
+    attachment_ids: list[str] = Field(default_factory=list)
+
+
 BASE_DIR = Path(__file__).resolve().parent
 WEB_DIR = BASE_DIR / "web"
+UPLOADS_DIR = BASE_DIR / "workspace" / "uploads"
+WEB_DIR.mkdir(parents=True, exist_ok=True)
+UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
 
-app = FastAPI(title="Agent Mode API", version="0.6.0")
+app = FastAPI(title="Agent Mode API", version="0.7.0")
 app.mount("/static", StaticFiles(directory=str(WEB_DIR)), name="static")
+
 approval_store = ApprovalStore()
 
-# In-memory task store for MVP.
+# In-memory stores for MVP
 TASKS: dict[str, dict] = {}
+CHAT_SESSIONS: dict[str, dict] = {}
+UPLOADS: dict[str, dict] = {}
 
 TERMINAL_STATUSES = {"completed", "blocked", "failed"}
 
@@ -47,6 +66,22 @@ def _set_task_status(task: dict, status: str, output_text: str | None = None) ->
     task["updated_at"] = _now()
     if output_text is not None:
         task["output_text"] = output_text
+
+
+def _new_task(prompt: str, model: str, max_turns: int) -> dict:
+    task_id = str(uuid.uuid4())
+    return {
+        "id": task_id,
+        "prompt": prompt,
+        "model": model,
+        "max_turns": max_turns,
+        "status": "running",
+        "output_text": "",
+        "pending_approvals": [],
+        "created_at": _now(),
+        "updated_at": _now(),
+        "last_response_id": None,
+    }
 
 
 def _run_task(task: dict) -> dict:
@@ -83,14 +118,77 @@ def _run_task_or_http_error(task: dict) -> dict:
         raise HTTPException(status_code=500, detail=f"Task execution failed: {exc}") from exc
 
 
+def _chat_text_reply(messages: list[dict], model: str) -> str:
+    client = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+    prompt_messages = []
+    for msg in messages:
+        if msg["role"] not in {"user", "assistant"}:
+            continue
+        prompt_messages.append({"role": msg["role"], "content": msg["content"]})
+
+    response = client.responses.create(model=model, input=prompt_messages)
+    return response.output_text or "پاسخی تولید نشد."
+
+
+def _session_summary(session: dict) -> dict:
+    return {
+        "id": session["id"],
+        "title": session["title"],
+        "created_at": session["created_at"],
+        "updated_at": session["updated_at"],
+        "message_count": len(session["messages"]),
+        "last_mode": session.get("last_mode", "agent"),
+    }
+
+
 @app.get("/", include_in_schema=False)
 def frontend_index() -> FileResponse:
-    return FileResponse(WEB_DIR / "index.html")
+    index_file = WEB_DIR / "index.html"
+    if not index_file.exists():
+        raise HTTPException(status_code=404, detail="Frontend not found")
+    return FileResponse(index_file)
 
 
 @app.get("/health")
 def health() -> dict:
     return {"ok": True}
+
+
+@app.post("/uploads")
+async def upload_files(files: list[UploadFile] = File(...)) -> dict:
+    saved = []
+    for file in files:
+        upload_id = str(uuid.uuid4())
+        safe_name = Path(file.filename or "file.bin").name
+        disk_name = f"{upload_id}_{safe_name}"
+        target = UPLOADS_DIR / disk_name
+        data = await file.read()
+        target.write_bytes(data)
+        meta = {
+            "id": upload_id,
+            "filename": safe_name,
+            "content_type": file.content_type,
+            "size": len(data),
+            "created_at": _now(),
+            "path": str(target),
+        }
+        UPLOADS[upload_id] = meta
+        saved.append(meta)
+    return {"files": saved}
+
+
+@app.get("/uploads")
+def list_uploads() -> dict:
+    items = sorted(UPLOADS.values(), key=lambda x: x["created_at"], reverse=True)
+    return {"files": items, "count": len(items)}
+
+
+@app.get("/uploads/{upload_id}/download", include_in_schema=False)
+def download_upload(upload_id: str) -> FileResponse:
+    item = UPLOADS.get(upload_id)
+    if item is None:
+        raise HTTPException(status_code=404, detail="Upload not found")
+    return FileResponse(item["path"], filename=item["filename"])
 
 
 @app.get("/tasks")
@@ -101,20 +199,8 @@ def list_tasks() -> dict:
 
 @app.post("/tasks")
 def create_task(req: TaskCreateRequest) -> dict:
-    task_id = str(uuid.uuid4())
-    task = {
-        "id": task_id,
-        "prompt": req.prompt,
-        "model": req.model,
-        "max_turns": req.max_turns,
-        "status": "running",
-        "output_text": "",
-        "pending_approvals": [],
-        "created_at": _now(),
-        "updated_at": _now(),
-        "last_response_id": None,
-    }
-    TASKS[task_id] = task
+    task = _new_task(req.prompt, req.model, req.max_turns)
+    TASKS[task["id"]] = task
     return _run_task_or_http_error(task)
 
 
@@ -170,3 +256,97 @@ def resume_task(task_id: str) -> dict:
 
     _set_task_status(task, "running")
     return _run_task_or_http_error(task)
+
+
+@app.get("/chat/sessions")
+def list_chat_sessions() -> dict:
+    sessions = sorted(CHAT_SESSIONS.values(), key=lambda s: s["updated_at"], reverse=True)
+    return {"sessions": [_session_summary(s) for s in sessions], "count": len(sessions)}
+
+
+@app.post("/chat/sessions")
+def create_chat_session(req: ChatSessionCreateRequest) -> dict:
+    session_id = str(uuid.uuid4())
+    session = {
+        "id": session_id,
+        "title": (req.title or "گفتگوی جدید").strip() or "گفتگوی جدید",
+        "created_at": _now(),
+        "updated_at": _now(),
+        "messages": [],
+        "last_mode": "agent",
+    }
+    CHAT_SESSIONS[session_id] = session
+    return session
+
+
+@app.get("/chat/sessions/{session_id}")
+def get_chat_session(session_id: str) -> dict:
+    session = CHAT_SESSIONS.get(session_id)
+    if session is None:
+        raise HTTPException(status_code=404, detail="Session not found")
+    return session
+
+
+@app.post("/chat/sessions/{session_id}/messages")
+def create_chat_message(session_id: str, req: ChatMessageCreateRequest) -> dict:
+    session = CHAT_SESSIONS.get(session_id)
+    if session is None:
+        raise HTTPException(status_code=404, detail="Session not found")
+
+    attachments = []
+    for aid in req.attachment_ids:
+        meta = UPLOADS.get(aid)
+        if meta is None:
+            raise HTTPException(status_code=404, detail=f"Attachment not found: {aid}")
+        attachments.append(meta)
+
+    user_msg = {
+        "id": str(uuid.uuid4()),
+        "role": "user",
+        "content": req.content,
+        "attachments": attachments,
+        "created_at": _now(),
+    }
+    session["messages"].append(user_msg)
+
+    if session["title"] == "گفتگوی جدید":
+        session["title"] = req.content.strip()[:36] or "گفتگوی جدید"
+
+    assistant_text = ""
+    assistant_meta: dict = {"mode": req.mode}
+
+    if req.mode == "agent":
+        attachment_lines = [f"- {a['filename']} ({a['size']} bytes)" for a in attachments]
+        attachment_hint = ""
+        if attachment_lines:
+            attachment_hint = "\n\nضمیمه ها:\n" + "\n".join(attachment_lines)
+        task = _new_task(req.content + attachment_hint, req.model, req.max_turns)
+        TASKS[task["id"]] = task
+        task = _run_task_or_http_error(task)
+        assistant_text = task.get("output_text") or "پاسخ خالی بود."
+        assistant_meta = {
+            "mode": "agent",
+            "task_id": task["id"],
+            "task_status": task["status"],
+            "pending_approvals": task.get("pending_approvals", []),
+        }
+    else:
+        try:
+            assistant_text = _chat_text_reply(session["messages"], req.model)
+        except OpenAIError as exc:
+            raise HTTPException(status_code=400, detail=f"OpenAI client error: {exc}") from exc
+        assistant_meta = {"mode": "chat"}
+
+    assistant_msg = {
+        "id": str(uuid.uuid4()),
+        "role": "assistant",
+        "content": assistant_text,
+        "meta": assistant_meta,
+        "created_at": _now(),
+    }
+
+    session["messages"].append(assistant_msg)
+    session["updated_at"] = _now()
+    session["last_mode"] = req.mode
+
+    return {"session": session, "assistant_message": assistant_msg}
