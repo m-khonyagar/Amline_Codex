@@ -3,68 +3,82 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>کنسول عامل هوشمند</title>
+  <title>عامل گفتگو</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700;800&family=Space+Grotesk:wght@500;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="/static/styles.css" />
 </head>
 <body>
-  <div class="bg-grid"></div>
-  <header class="topbar">
-    <div class="brand">عامل<span>کنسول</span></div>
-    <nav>
-      <a href="#workbench">میز کار</a>
-      <a href="#tasks">تسک‌ها</a>
-      <a href="#approvals">تاییدها</a>
-    </nav>
-  </header>
-  <main class="layout">
-    <section class="hero" id="workbench">
-      <p class="eyebrow">مرکز عملیات عامل هوشمند</p>
-      <h1>تسک‌های مهندسی را سریع‌تر، امن‌تر و شفاف‌تر جلو ببر.</h1>
-      <p class="sub">از همینجا تسک بساز، خروجی بگیر، تایید حساس انجام بده و اجرای عامل را ادامه بده.</p>
-      <div class="hero-metrics">
-        <article><strong id="mTotal">0</strong><span>کل تسک‌ها</span></article>
-        <article><strong id="mPending">0</strong><span>تاییدهای در انتظار</span></article>
-        <article><strong id="mBlocked">0</strong><span>تسک‌های بلوکه</span></article>
+  <div class="app-shell">
+    <aside class="sidebar">
+      <div class="sidebar-head">
+        <h1>عامل گفتگو</h1>
+        <button id="newChatBtn" class="btn-solid">گفتگوی جدید</button>
       </div>
-    </section>
+      <div class="section-title">گفتگوها</div>
+      <div id="sessionList" class="session-list"></div>
+    </aside>
 
-    <section class="panel create-panel">
-      <div class="panel-title-row">
-        <h2>ایجاد تسک جدید</h2>
-        <span class="badge online" id="healthBadge">در حال بررسی...</span>
-      </div>
-      <form id="taskForm">
-        <label>دستور / درخواست</label>
-        <textarea id="prompt" rows="5" placeholder="مثال: در workspace یک گزارش خلاصه بساز و ذخیره کن..."></textarea>
-        <div class="grid-2">
-          <div><label>مدل</label><input id="model" value="gpt-4.1" /></div>
-          <div><label>حداکثر نوبت</label><input id="maxTurns" type="number" min="1" max="50" value="12" /></div>
+    <main class="chat-main">
+      <header class="chat-topbar">
+        <div class="mode-switch" id="modeSwitch">
+          <button data-mode="chat" class="mode-btn">حالت چت</button>
+          <button data-mode="agent" class="mode-btn active">Agent Mode</button>
         </div>
-        <button type="submit" class="btn-primary">اجرای تسک</button>
-      </form>
-      <pre id="createResult" class="mono"></pre>
-    </section>
+        <div class="top-actions">
+          <input id="modelInput" value="gpt-4.1" />
+          <span id="healthBadge" class="badge ok">آنلاین</span>
+        </div>
+      </header>
 
-    <section class="panel" id="tasks">
-      <div class="panel-title-row"><h2>جریان تسک‌ها</h2><button id="refreshBtn" class="btn-ghost">بروزرسانی</button></div>
-      <div id="taskList" class="list"></div>
-    </section>
+      <section id="messagePane" class="message-pane">
+        <div class="empty-state">یک گفتگو بساز و پیام اول را بفرست.</div>
+      </section>
 
-    <section class="panel" id="approvals">
-      <div class="panel-title-row"><h2>تاییدهای حساس</h2></div>
-      <div id="approvalList" class="list"></div>
-    </section>
-  </main>
+      <section class="composer">
+        <div id="attachmentBar" class="attachment-bar"></div>
+        <div class="composer-row">
+          <label class="upload-btn" for="fileInput">📎 فایل/تصویر</label>
+          <input id="fileInput" type="file" multiple hidden />
+          <textarea id="messageInput" placeholder="پیام خودت را بنویس..." rows="1"></textarea>
+          <button id="sendBtn" class="btn-solid">ارسال</button>
+        </div>
+      </section>
+    </main>
 
-  <template id="taskItemTemplate">
-    <article class="task-item"><div class="task-head"><h3></h3><span class="badge"></span></div><p class="prompt"></p><pre class="mono output"></pre><div class="actions"></div></article>
+    <aside class="agent-panel">
+      <div class="section-title">تاییدهای Agent</div>
+      <div id="approvalList" class="approval-list"></div>
+      <div class="section-title">آپلودهای اخیر</div>
+      <div id="uploadList" class="upload-list"></div>
+    </aside>
+  </div>
+
+  <template id="sessionItemTpl">
+    <button class="session-item">
+      <strong></strong>
+      <small></small>
+    </button>
   </template>
 
-  <template id="approvalItemTemplate">
-    <article class="approval-item"><div class="task-head"><h3></h3><span class="badge pending">در انتظار</span></div><pre class="mono"></pre><div class="actions"><button class="btn-approve">تایید</button><button class="btn-deny">رد</button></div></article>
+  <template id="messageTpl">
+    <article class="msg">
+      <div class="msg-role"></div>
+      <div class="msg-content"></div>
+      <div class="msg-meta"></div>
+    </article>
+  </template>
+
+  <template id="approvalTpl">
+    <article class="approval-item">
+      <div class="approval-title"></div>
+      <pre class="approval-args"></pre>
+      <div class="approval-actions">
+        <button class="btn-ok">تایید</button>
+        <button class="btn-no">رد</button>
+      </div>
+    </article>
   </template>
 
   <script src="/static/app.js"></script>
