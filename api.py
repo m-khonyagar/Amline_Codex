@@ -6,6 +6,7 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Literal
 
+from dotenv import load_dotenv
 from fastapi import FastAPI, File, HTTPException, UploadFile
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
@@ -38,13 +39,20 @@ class ChatMessageCreateRequest(BaseModel):
     attachment_ids: list[str] = Field(default_factory=list)
 
 
+load_dotenv()
+
 BASE_DIR = Path(__file__).resolve().parent
 WEB_DIR = BASE_DIR / "web"
-UPLOADS_DIR = BASE_DIR / "workspace" / "uploads"
-WEB_DIR.mkdir(parents=True, exist_ok=True)
-UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
+WORKSPACE_ROOT = Path(os.environ.get("WORKSPACE_ROOT", str(BASE_DIR / "workspace"))).resolve()
+UPLOADS_DIR = WORKSPACE_ROOT / "uploads"
+UPLOAD_ALIAS_DIR = WORKSPACE_ROOT / "attachments"
 
-app = FastAPI(title="Agent Mode API", version="0.7.0")
+WEB_DIR.mkdir(parents=True, exist_ok=True)
+WORKSPACE_ROOT.mkdir(parents=True, exist_ok=True)
+UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
+UPLOAD_ALIAS_DIR.mkdir(parents=True, exist_ok=True)
+
+app = FastAPI(title="Agent Mode API", version="0.8.0")
 app.mount("/static", StaticFiles(directory=str(WEB_DIR)), name="static")
 
 approval_store = ApprovalStore()
@@ -141,6 +149,45 @@ def _session_summary(session: dict) -> dict:
     }
 
 
+def _preview_text(data: bytes, filename: str, content_type: str | None) -> str | None:
+    text_like = {".txt", ".md", ".json", ".csv", ".py", ".log"}
+    suffix = Path(filename).suffix.lower()
+    if suffix not in text_like and not (content_type or "").startswith("text/"):
+        return None
+    try:
+        decoded = data.decode("utf-8")
+    except UnicodeDecodeError:
+        return None
+    preview = decoded[:1600].strip()
+    return preview or None
+
+
+def _build_agent_prompt(content: str, attachments: list[dict]) -> str:
+    if not attachments:
+        return content
+
+    lines = [
+        content,
+        "",
+        "فایل های ضمیمه داخل WORKSPACE_ROOT در این مسیرها قابل خواندن هستند:",
+    ]
+    for a in attachments:
+        lines.append(f"- {a['filename']} -> {a['workspace_path']}")
+
+    lines.append("")
+    lines.append("برای خواندن محتوا از local_read_file با path های بالا استفاده کن.")
+
+    previews = [a for a in attachments if a.get("preview_text")]
+    if previews:
+        lines.append("")
+        lines.append("پیش نمایش اولیه برخی فایل های متنی:")
+        for a in previews:
+            lines.append(f"--- {a['workspace_path']} ---")
+            lines.append(a["preview_text"])
+
+    return "\n".join(lines)
+
+
 @app.get("/", include_in_schema=False)
 def frontend_index() -> FileResponse:
     index_file = WEB_DIR / "index.html"
@@ -160,17 +207,27 @@ async def upload_files(files: list[UploadFile] = File(...)) -> dict:
     for file in files:
         upload_id = str(uuid.uuid4())
         safe_name = Path(file.filename or "file.bin").name
-        disk_name = f"{upload_id}_{safe_name}"
-        target = UPLOADS_DIR / disk_name
+
+        raw_name = f"{upload_id}_{safe_name}"
+        raw_path = UPLOADS_DIR / raw_name
+
+        alias_dir = UPLOAD_ALIAS_DIR / upload_id
+        alias_dir.mkdir(parents=True, exist_ok=True)
+        alias_path = alias_dir / safe_name
+
         data = await file.read()
-        target.write_bytes(data)
+        raw_path.write_bytes(data)
+        alias_path.write_bytes(data)
+
         meta = {
             "id": upload_id,
             "filename": safe_name,
             "content_type": file.content_type,
             "size": len(data),
             "created_at": _now(),
-            "path": str(target),
+            "path": str(raw_path),
+            "workspace_path": str(alias_path.relative_to(WORKSPACE_ROOT)).replace("\\", "/"),
+            "preview_text": _preview_text(data, safe_name, file.content_type),
         }
         UPLOADS[upload_id] = meta
         saved.append(meta)
@@ -313,14 +370,10 @@ def create_chat_message(session_id: str, req: ChatMessageCreateRequest) -> dict:
         session["title"] = req.content.strip()[:36] or "گفتگوی جدید"
 
     assistant_text = ""
-    assistant_meta: dict = {"mode": req.mode}
 
     if req.mode == "agent":
-        attachment_lines = [f"- {a['filename']} ({a['size']} bytes)" for a in attachments]
-        attachment_hint = ""
-        if attachment_lines:
-            attachment_hint = "\n\nضمیمه ها:\n" + "\n".join(attachment_lines)
-        task = _new_task(req.content + attachment_hint, req.model, req.max_turns)
+        task_prompt = _build_agent_prompt(req.content, attachments)
+        task = _new_task(task_prompt, req.model, req.max_turns)
         TASKS[task["id"]] = task
         task = _run_task_or_http_error(task)
         assistant_text = task.get("output_text") or "پاسخ خالی بود."

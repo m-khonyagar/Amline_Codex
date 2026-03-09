@@ -104,9 +104,16 @@ def test_create_chat_session_and_message_in_agent_mode(monkeypatch) -> None:
 def test_upload_file_and_use_in_chat(monkeypatch, tmp_path: Path) -> None:
     _reset_state()
 
-    monkeypatch.setattr(api, "UPLOADS_DIR", tmp_path)
+    monkeypatch.setattr(api, "WORKSPACE_ROOT", tmp_path)
+    monkeypatch.setattr(api, "UPLOADS_DIR", tmp_path / "uploads")
+    monkeypatch.setattr(api, "UPLOAD_ALIAS_DIR", tmp_path / "attachments")
+    api.UPLOADS_DIR.mkdir(parents=True, exist_ok=True)
+    api.UPLOAD_ALIAS_DIR.mkdir(parents=True, exist_ok=True)
+
+    captured_prompt = {"value": ""}
 
     def fake_run(task: dict) -> dict:
+        captured_prompt["value"] = task["prompt"]
         task["status"] = "completed"
         task["output_text"] = "ضمیمه دریافت شد"
         return task
@@ -120,7 +127,8 @@ def test_upload_file_and_use_in_chat(monkeypatch, tmp_path: Path) -> None:
         files=[("files", ("sample.txt", b"hello upload", "text/plain"))],
     )
     assert uploaded.status_code == 200
-    file_id = uploaded.json()["files"][0]["id"]
+    file_obj = uploaded.json()["files"][0]
+    file_id = file_obj["id"]
 
     session = client.post("/chat/sessions", json={})
     session_id = session.json()["id"]
@@ -137,3 +145,5 @@ def test_upload_file_and_use_in_chat(monkeypatch, tmp_path: Path) -> None:
     )
     assert sent.status_code == 200
     assert sent.json()["assistant_message"]["content"] == "ضمیمه دریافت شد"
+    assert file_obj["workspace_path"] in captured_prompt["value"]
+    assert "local_read_file" in captured_prompt["value"]
