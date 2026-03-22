@@ -7,7 +7,10 @@
 ## ۰. اگر کاملاً تازه هستی — شروع اینجا
 
 **لینک مستقیم (خواندن آنلاین):**  
-https://github.com/m-khonyagar/Amline_Codex/blob/main/deployment/docs/AGENT_ONBOARDING.md
+https://github.com/m-khonyagar/Amline_Codex/blob/main/deployment/docs/AGENT_ONBOARDING.md  
+
+**لینک raw (برای fetch):**  
+https://raw.githubusercontent.com/m-khonyagar/Amline_Codex/main/deployment/docs/AGENT_ONBOARDING.md
 
 **ریپوی گیت:** `https://github.com/m-khonyagar/Amline_Codex.git`
 
