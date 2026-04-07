@@ -1,1 +1,0 @@
-export { UserAdsList } from './UserAdsList'

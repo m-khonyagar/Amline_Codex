@@ -1,1 +1,0 @@
-export { requirementsRoutes } from './routes'

@@ -1,1 +1,0 @@
-export { UserRequirementsList } from './UserRequirementsList'

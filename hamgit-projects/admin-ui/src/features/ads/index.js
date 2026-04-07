@@ -1,1 +1,0 @@
-export { adsRoutes } from './routes'

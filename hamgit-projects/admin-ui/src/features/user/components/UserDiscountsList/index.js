@@ -1,1 +1,0 @@
-export { UserDiscountsList } from './UserDiscountsList'

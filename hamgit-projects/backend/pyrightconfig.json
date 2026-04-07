@@ -1,6 +1,0 @@
-{
-    "typeCheckingMode": "basic",
-    "reportMissingImports": true,
-    "reportUnusedVariable": true,
-    "reportUnnecessaryTypeIgnoreComment": true,
-}

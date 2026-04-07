@@ -1,1 +1,0 @@
-export { GoftinoWidget } from './GoftinoWidget'

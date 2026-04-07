@@ -1,1 +1,0 @@
-export { clausesRoutes } from './routes'
