@@ -1,0 +1,19 @@
+# CODEOWNERS
+# https://docs.github.com/en/repositories/managing-your-repositorys-settings-and-features/customizing-your-repository/about-code-owners
+
+# Default: repo owner reviews everything
+*                           @m-khonyagar
+
+# Platform apps (namAvaran)
+apps/namAvaran/admin-ui/    @m-khonyagar
+apps/namAvaran/amline-ui/   @m-khonyagar
+apps/namAvaran/backend/     @m-khonyagar
+apps/namAvaran/channel-gateway/ @m-khonyagar
+apps/namAvaran/pdf-generator/   @m-khonyagar
+
+# AI Agent service
+services/agent/             @m-khonyagar
+
+# CI & repo hygiene
+.github/                    @m-khonyagar
+.gitignore                  @m-khonyagar
