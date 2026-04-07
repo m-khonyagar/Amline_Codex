@@ -1,0 +1,112 @@
+# Node.js
+node_modules/
+.npm
+.yarn
+.pnp
+.pnp.js
+
+# Build outputs
+.next/
+out/
+dist/
+build/
+*.tsbuildinfo
+
+# Cache
+.cache/
+.eslintcache
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+# استثنا: کتابخانهٔ سورس فرانت کاربر (مسیر lib/ سراسری Python را اشتباهی نادیده می‌گرفت)
+!amline-ui/lib/
+!amline-ui/lib/**
+# استثنا: کد منبع TypeScript پنل ادمین (rule سراسری lib/ مربوط به پایتون است)
+!admin-ui/src/lib/
+!admin-ui/src/lib/**
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+ENV/
+env/
+.venv
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Google Search Console / Service Account keys (حساس)
+**/*-key.json
+**/*-account-*.json
+
+# GSC Generated Data ( regeneration needed)
+docs/gsc_data/*.json
+docs/gsc_data/*.xlsx
+docs/gsc_data/*.csv
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Embedded git repos (فقط پوشه‌های موقت)
+تست برنامه نویسی/
+Google Dos/
+
+# Secrets - Never commit these
+.env
+.env.local
+.env.*.local
+*.pem
+*.key
+id_rsa*
+id_ed25519*
+
+# Master reference doc (contains credentials — local only)
+docs/AMLINE_MASTER_REFERENCE.md
+
+# SEO Dashboard secrets
+seo-dashboard/.env.local
+
+# Playwright / E2E (regenerated locally; do not version screenshots or traces)
+admin-ui/test-results/
+amline-ui/test-results/
+
+# QA Playwright HTML report output
+qa-amline-tests/playwright-report/
+
+# Local extract from amline_repos_cloned.zip for diff only (never commit)
+.reference/
+
+# Scratch / temporary backend checkout (not part of monorepo source)
+_temp_backend/
+
+# Deploy artifacts
+node-linux.tar.xz
+paramiko_debug.log
+seo-dashboard-deploy.tar.gz
+*-deploy.tar.gz
+
+# Offline VPN bundle (contains keys + vpn.auth; never commit)
+vpn-setup/offline-vpn-bundle/READY_TO_COPY/
