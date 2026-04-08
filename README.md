@@ -97,7 +97,31 @@ cd services/agent
 .\run.ps1
 ```
 
-Requires `OPENAI_API_KEY` in `services/agent/.env`.
+On Windows you can also use `run.bat` in `services/agent/` for a one-shot setup (venv, deps, Playwright Chromium, `.env` from `.env.example`, `workspace/`, API on `http://127.0.0.1:8000`).
+
+Requires `OPENAI_API_KEY` in `services/agent/.env`. If it is missing, `POST /tasks` returns `400` with a clear error.
+
+#### Agent HTTP API
+
+- `GET /health`
+- `GET /tasks`
+- `POST /tasks`
+- `GET /tasks/{task_id}`
+- `GET /tasks/{task_id}/approvals`
+- `GET /approvals/pending`
+- `POST /approvals/{approval_id}` (`approve` | `deny`)
+- `POST /tasks/{task_id}/resume`
+
+#### Approval-gated tools
+
+Actions that require approval include `browser_click`, `local_write_file`, and `local_run_python_script`. Each approval is decided once and cannot be changed. If an approval is `pending` or `denied`, `resume` responds with `409`.
+
+Key implementation files live under `services/agent/`: `main.py` (CLI), `agent.py`, `tool_registry.py`, `browser_tool.py`, `local_bridge.py`, `policy.py`, `approval.py`, `api.py`, and `tests/`. See `REPOSITORY_BOUNDARIES.md` and `ARTIFACT_POLICY.md` where present for repository policy.
+
+```powershell
+cd services/agent
+.\.venv\Scripts\pytest.exe -q
+```
 
 ---
 
