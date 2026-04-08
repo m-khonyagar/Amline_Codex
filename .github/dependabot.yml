@@ -1,0 +1,83 @@
+version: 2
+
+updates:
+  # GitHub Actions
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+      - "github-actions"
+
+  # Agent service (Python)
+  - package-ecosystem: "pip"
+    directory: "/services/agent"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+      - "python"
+
+  # Backend API (Python)
+  - package-ecosystem: "pip"
+    directory: "/apps/namAvaran/backend/backend"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+      - "python"
+
+  # Super Agent (Python)
+  - package-ecosystem: "pip"
+    directory: "/apps/namAvaran/super-agent"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+      - "python"
+
+  # Admin UI (npm)
+  - package-ecosystem: "npm"
+    directory: "/apps/namAvaran/admin-ui"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+      - "javascript"
+
+  # User UI (npm)
+  - package-ecosystem: "npm"
+    directory: "/apps/namAvaran/amline-ui"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+      - "javascript"
+
+  # Marketing Site (npm)
+  - package-ecosystem: "npm"
+    directory: "/apps/namAvaran/site"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+      - "javascript"
+
+  # Channel Gateway (npm)
+  - package-ecosystem: "npm"
+    directory: "/apps/namAvaran/channel-gateway"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+      - "javascript"
+
+  # SaaS MVP (npm)
+  - package-ecosystem: "npm"
+    directory: "/apps/saas-mvp"
+    schedule:
+      interval: "weekly"
+    labels:
+      - "dependencies"
+      - "javascript"

@@ -1,74 +1,195 @@
-# Agent Mode (Production-Ready MVP)
+# Amline — پلتفرم هوشمند قرارداد ملکی
 
-این پروژه یک Agent هیبریدی می‌دهد با:
-- OpenAI Responses API + Function Calling
-- ابزار مرورگر Playwright
-- Local Bridge محدود به `WORKSPACE_ROOT`
-- FastAPI با Task/Approval Flow
-- تست‌های خودکار (`pytest`)
-- اجرای یک‌فرمانی (`run.bat` / `run.ps1`)
+> **Monorepo** — Single source of truth for all Amline services and applications.
 
-## اجرای سریع (تقریبا بدون کار دستی)
-در ویندوز فقط این را اجرا کن:
-```bash
-run.bat
+[![Python CI](https://github.com/m-khonyagar/Amline_Codex/actions/workflows/ci-python.yml/badge.svg)](https://github.com/m-khonyagar/Amline_Codex/actions/workflows/ci-python.yml)
+[![JS/TS CI](https://github.com/m-khonyagar/Amline_Codex/actions/workflows/ci-js.yml/badge.svg)](https://github.com/m-khonyagar/Amline_Codex/actions/workflows/ci-js.yml)
+
+---
+
+## Architecture Overview
+
+```
+Amline_Codex (monorepo)
+│
+├── apps/
+│   ├── namAvaran/           ← Main platform (imported from Amline_namAvaran)
+│   │   ├── admin-ui/        React + Vite — Admin panel            (port 3002)
+│   │   ├── amline-ui/       Next.js 14   — User-facing UI         (port 3000)
+│   │   ├── site/            Next.js 15   — Static marketing site  (port 3001)
+│   │   ├── consultant-ui/   React + Vite — Consultant panel       (port 3004)
+│   │   ├── backend/         FastAPI + PostgreSQL — Main API       (port 8080)
+│   │   ├── channel-gateway/ Node.js TypeScript — Messaging GW
+│   │   ├── pdf-generator/   FastAPI — PDF rendering service       (port 8001)
+│   │   ├── dev-mock-api/    FastAPI — Local dev mock              (port 8080)
+│   │   ├── super-agent/     Python — Self-improving AI orchestrator
+│   │   ├── agents/          Python — AI agent implementations
+│   │   └── local-dev-hub/   HTML — Local dev launch hub
+│   │
+│   └── saas-mvp/            Next.js 14 — SaaS MVP (Codex origin)
+│
+├── services/
+│   └── agent/               Python — Hybrid AI agent (FastAPI + OpenAI + Playwright)
+│
+├── scripts/
+│   └── deployment/          Deployment and sync scripts
+│
+└── .github/
+    └── workflows/           CI pipelines
 ```
 
-این اسکریپت کارهای زیر را خودکار انجام می‌دهد:
-- ساخت `.venv` (در صورت نبود)
-- نصب dependencyها
-- نصب Chromium برای Playwright
-- ساخت `.env` از روی `.env.example` (در صورت نبود)
-- ساخت پوشه `workspace`
-- اجرای API روی `http://127.0.0.1:8000`
+---
 
-## نکته کلیدی
-برای اجرای واقعی `POST /tasks` باید `OPENAI_API_KEY` در `.env` تنظیم باشد.
-اگر تنظیم نباشد، API خطای واضح `400` برمی‌گرداند.
+## Quickstart
 
-## محدوده مخزن
-هستهٔ اصلی این ریپو همان agent MVP در ریشهٔ مخزن است.
+### Prerequisites
 
-- فایل‌های ریشه مثل `agent.py`, `api.py`, `tool_registry.py`, `browser_tool.py` و `tests/` محصول اصلی‌اند.
-- `deployment/` ابزارها و اسناد استقرار است.
-- `saas-mvp/` یک زیربخش اکتشافی جدا از هسته agent است.
-- `hamgit-projects/` و `web/` مواد جانبی/قدیمی‌تر هستند و نباید بدون دلیل به هستهٔ agent گره بخورند.
+- Docker + Docker Compose
+- Node.js ≥ 18
+- Python ≥ 3.11
+- PowerShell 7+ (Windows) or Bash
 
-جزئیات بیشتر در `REPOSITORY_BOUNDARIES.md` و `ARTIFACT_POLICY.md` آمده است.
+### 1. Clone & Configure
 
-## Endpointها
+```bash
+git clone https://github.com/m-khonyagar/Amline_Codex.git
+cd Amline_Codex
+cp .env.example .env
+# Fill in .env with real values
+```
+
+### 2. Run with Docker Compose (recommended)
+
+```bash
+cd apps/namAvaran
+cp .env.example .env   # adjust values
+docker-compose up -d
+```
+
+This starts: postgres, redis, minio, backend, pdf-generator, channel-gateway.
+
+### 3. Run UIs locally (mock mode — no backend needed)
+
+```powershell
+# Start mock API (port 8080)
+cd apps/namAvaran/dev-mock-api
+.\run.ps1
+
+# Admin UI (port 3002) — separate terminal
+cd apps/namAvaran/admin-ui
+npm install && npm run dev
+
+# User UI (port 3000) — separate terminal
+cd apps/namAvaran/amline-ui
+npm install && npm run dev
+```
+
+**Or use the integrated dev hub:**
+```powershell
+cd apps/namAvaran
+powershell -ExecutionPolicy Bypass -File .\scripts\start-platform-local-hub.ps1
+```
+
+### 4. Run AI Agent service
+
+```powershell
+cd services/agent
+.\run.ps1
+```
+
+On Windows you can also use `run.bat` in `services/agent/` for a one-shot setup (venv, deps, Playwright Chromium, `.env` from `.env.example`, `workspace/`, API on `http://127.0.0.1:8000`).
+
+Requires `OPENAI_API_KEY` in `services/agent/.env`. If it is missing, `POST /tasks` returns `400` with a clear error.
+
+#### Agent HTTP API
+
 - `GET /health`
 - `GET /tasks`
 - `POST /tasks`
 - `GET /tasks/{task_id}`
 - `GET /tasks/{task_id}/approvals`
 - `GET /approvals/pending`
-- `POST /approvals/{approval_id}` (`approve|deny`)
+- `POST /approvals/{approval_id}` (`approve` | `deny`)
 - `POST /tasks/{task_id}/resume`
 
-## رفتار Approval
-اکشن‌های حساس که approval می‌خواهند:
-- `browser_click`
-- `local_write_file`
-- `local_run_python_script`
+#### Approval-gated tools
 
-نکات:
-- approval یک‌بار تصمیم‌گیری می‌شود و قابل تغییر نیست.
-- اگر approval `pending` یا `denied` باشد، `resume` با `409` رد می‌شود.
+Actions that require approval include `browser_click`, `local_write_file`, and `local_run_python_script`. Each approval is decided once and cannot be changed. If an approval is `pending` or `denied`, `resume` responds with `409`.
 
-## تست‌ها
-```bash
+Key implementation files live under `services/agent/`: `main.py` (CLI), `agent.py`, `tool_registry.py`, `browser_tool.py`, `local_bridge.py`, `policy.py`, `approval.py`, `api.py`, and `tests/`. See `REPOSITORY_BOUNDARIES.md` and `ARTIFACT_POLICY.md` where present for repository policy.
+
+```powershell
+cd services/agent
 .\.venv\Scripts\pytest.exe -q
 ```
 
-## فایل‌های اصلی
-- `main.py`: CLI
-- `agent.py`: حلقه عامل + مدیریت approval
-- `tool_registry.py`: رجیستری ابزارها
-- `browser_tool.py`: ابزار مرورگر
-- `local_bridge.py`: ابزارهای لوکال با محدودسازی مسیر
-- `policy.py`: policy از env
-- `approval.py`: ذخیره approvalها
-- `api.py`: endpointها و state task
-- `tests/`: تست‌های واحد/یکپارچه سبک
-- `run.ps1` / `run.bat`: اجرای یک‌فرمانی
+---
+
+## Service Map
+
+| Service | Tech | Port | Directory |
+|---------|------|------|-----------|
+| Admin UI | React + Vite | 3002 | `apps/namAvaran/admin-ui/` |
+| User UI (amline-ui) | Next.js 14 | 3000 | `apps/namAvaran/amline-ui/` |
+| Marketing Site | Next.js 15 | 3001 | `apps/namAvaran/site/` |
+| Consultant UI | React + Vite | 3004 | `apps/namAvaran/consultant-ui/` |
+| Backend API | FastAPI + PostgreSQL | 8080 | `apps/namAvaran/backend/backend/` |
+| PDF Generator | FastAPI | 8001 | `apps/namAvaran/pdf-generator/` |
+| Channel Gateway | Node.js TypeScript | — | `apps/namAvaran/channel-gateway/` |
+| Dev Mock API | FastAPI | 8080 | `apps/namAvaran/dev-mock-api/` |
+| AI Agent | FastAPI + OpenAI | 8000 | `services/agent/` |
+| SaaS MVP | Next.js 14 | 3000 | `apps/saas-mvp/` |
+
+---
+
+## Testing
+
+```bash
+# Python (agent service)
+cd services/agent
+pip install -r requirements.txt
+pytest -q
+
+# Python (backend)
+cd apps/namAvaran/backend/backend
+pytest -q
+
+# JS unit tests (admin-ui)
+cd apps/namAvaran/admin-ui
+npm test
+
+# E2E tests (admin-ui, requires mock API on port 8080)
+cd apps/namAvaran/admin-ui
+npx playwright test
+```
+
+---
+
+## Environment Variables
+
+See [`.env.example`](.env.example) for the full reference.
+Each sub-project also has its own `.env.example`:
+
+- `apps/namAvaran/.env.example` — Platform (backend, docker-compose)
+- `apps/namAvaran/admin-ui/.env.example` — Admin UI Vite vars
+- `services/agent/.env.example` — Agent service
+
+**Never commit `.env` files with real credentials.**
+
+---
+
+## Migration History
+
+See [`MIGRATION.md`](MIGRATION.md) for the full record of what was migrated, from which repo, and what remains.
+
+---
+
+## Contributing
+
+See [`CONTRIBUTING.md`](CONTRIBUTING.md).
+
+---
+
+## License
+
+© ۱۴۰۳ اَملاین — All rights reserved.

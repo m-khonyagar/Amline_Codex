@@ -1,1 +1,0 @@
-export { SellerFilesList } from './SellerFilesList'

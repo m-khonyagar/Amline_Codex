@@ -1,1 +1,0 @@
-export { PromoCodesList } from './PromoCodesList'

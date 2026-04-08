@@ -1,1 +1,0 @@
-export { UserContractsList } from './UserContractsList'

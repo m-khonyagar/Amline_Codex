@@ -1,8 +1,0 @@
-{
-  "app": "amline",
-  "platform": "next",
-  "port": 3000,
-  "next": {
-    "modifyConfig": false
-  }
-}

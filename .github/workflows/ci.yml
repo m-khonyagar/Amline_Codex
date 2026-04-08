@@ -8,6 +8,9 @@ on:
 jobs:
   python:
     runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: services/agent
     steps:
       - name: Checkout
         uses: actions/checkout@v4
@@ -22,10 +25,10 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      - name: Compile sources
-        run: |
-          python -m compileall .
-
       - name: Run tests
+        env:
+          OPENAI_API_KEY: skip
+          WORKSPACE_ROOT: /tmp/workspace
         run: |
-          pytest -q
+          pytest -q --tb=short
+

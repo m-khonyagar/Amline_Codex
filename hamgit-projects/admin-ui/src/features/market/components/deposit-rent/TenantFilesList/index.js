@@ -1,1 +1,0 @@
-export { TenantFilesList } from './TenantFilesList'
