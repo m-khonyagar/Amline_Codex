@@ -4,6 +4,12 @@ Thank you for contributing! Please follow these guidelines.
 
 ---
 
+## Repository scope
+
+This monorepo holds several products (`services/agent/`, `apps/namAvaran/`, `apps/saas-mvp/`, etc.). Keep each pull request focused on the area you change, and update boundary documentation when folder ownership shifts. Do not commit generated runtimes, Playwright recordings, or disposable archives—use external artifact storage or release assets instead.
+
+---
+
 ## Getting Started
 
 1. **Fork** the repository and clone your fork.
@@ -67,6 +73,16 @@ cp services/agent/.env.example services/agent/.env
 ```
 
 **Never commit `.env` files with real credentials.**
+
+---
+
+## Expected checks (agent service)
+
+For changes under `services/agent/`:
+
+- `pip install -r requirements.txt`
+- `pytest -q`
+- Verify the FastAPI app still starts
 
 ---
 
