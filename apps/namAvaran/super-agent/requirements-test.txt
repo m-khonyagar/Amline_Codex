@@ -1,2 +1,2 @@
 -r requirements-server.txt
-pytest>=8.0,<9
+pytest>=8.0,<10
