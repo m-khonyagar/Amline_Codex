@@ -1,0 +1,46 @@
+workflow:
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+      when: never
+    - if: $CI_COMMIT_REF_NAME == "main"
+      when: always
+      variables:
+        ENVIRONMENT_NAME: production
+        # ENVIRONMENT_HOST: ""
+    - when: never
+
+variables:
+  FORCE_COLOR: 1
+  DOCKER_DRIVER: overlay2
+  DOCKER_TLS_CERTDIR: ""
+
+build:
+  services:
+  stage: build
+  image:
+    name: hub.cr.parmincloud.ir/library/docker
+  variables:
+    BUILDER_NAME: amline-backend
+  environment:
+    name: ${ENVIRONMENT_NAME}
+    # url: https://${ENVIRONMENT_HOST}
+  before_script:
+    - sed -i "s@https://dl-cdn.alpinelinux.org/@https://mirror.arvancloud.ir/@g" /etc/apk/repositories
+    - apk add --no-cache bash
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u "$CI_REGISTRY_USER" --password-stdin $CI_REGISTRY
+    - |
+      if ! docker buildx inspect "$BUILDER_NAME" > /dev/null 2>&1; then
+          docker buildx create --name "$BUILDER_NAME" --use --driver docker-container --bootstrap
+      else
+          docker buildx use "$BUILDER_NAME"
+      fi
+    - docker buildx inspect --bootstrap
+  script:
+    - |
+      docker buildx build \
+        --cache-from=type=registry,ref=$CI_REGISTRY_IMAGE:cache \
+        --cache-to=type=registry,ref=$CI_REGISTRY_IMAGE:cache,mode=max \
+        --cache-from=type=registry,ref=$CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME \
+        --cache-to $CI_REGISTRY_IMAGE/cache \
+        -t $CI_REGISTRY_IMAGE:$CI_COMMIT_REF_NAME \
+        --push .

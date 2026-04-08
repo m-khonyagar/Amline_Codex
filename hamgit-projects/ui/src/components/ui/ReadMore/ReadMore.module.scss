@@ -1,0 +1,23 @@
+.container {
+  display: block;
+}
+
+.text {
+  margin: 0;
+  display: inline-block;
+  white-space: pre-line;
+}
+
+.btn {
+  display: inline-block;
+  cursor: pointer;
+  align-items: center;
+  outline: none;
+  border: none;
+  padding: 0;
+  margin: 0 0.5rem 0 0;
+  height: auto;
+  background: none;
+  color: theme('colors.teal.600');
+  font-size: 0.875em;
+}

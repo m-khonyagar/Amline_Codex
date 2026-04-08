@@ -1,0 +1,33 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+{% include "pr_contract/header.html" %}
+
+<article>
+    <section id="title">
+        باسمه تعالی
+        <br>
+        <b>((قرارداد اجاره))</b>
+    </section>
+
+    {% if qr_base64 %}
+    <img style="width: 130px; height: 130px; position: absolute; top: 0px; left: 0" src="data:image/png;base64,{{qr_base64}}" alt="qrcode"/>
+    {% endif %}
+
+    {% include "pr_contract/article_1.html" %}
+
+    {% include "pr_contract/article_2.html" %}
+
+    {% include "pr_contract/article_3.html" %}
+
+    {% include "pr_contract/article_4.html" %}
+
+    {% include "pr_contract/article_5.html" %}
+
+    {% include "pr_contract/article_6.html" %}
+</article>
+
+{% include "pr_contract/footer.html" %}
+
+{% endblock %}

@@ -1,0 +1,16 @@
+.map-container {
+  width: 100%;
+  position: relative;
+}
+
+.map-marker {
+  z-index: 500;
+  top: 50%;
+  left: 50%;
+  position: absolute;
+  transform: translate(-50%, -100%);
+}
+
+.map-marker__pin {
+  color: theme('colors.rust.600');
+}

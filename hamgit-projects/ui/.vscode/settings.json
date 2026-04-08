@@ -1,0 +1,40 @@
+{
+  "editor.codeActionsOnSave": {
+    "source.fixAll.eslint": "explicit",
+    "source.fixAll.format": "explicit"
+  },
+  "editor.formatOnSave": true, // Tell VSCode to format files on save
+  "editor.formatOnPaste": true,
+  "editor.defaultFormatter": "dbaeumer.vscode-eslint",
+  "[javascript]": {
+    "editor.defaultFormatter": "vscode.typescript-language-features"
+  },
+  "[javascriptreact]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "[scss]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  },
+  "cSpell.language": "en,fa",
+  "cSpell.words": [
+    "amline",
+    "clsx",
+    "DIAVR",
+    "Divar",
+    "Eitaa",
+    "Goftino",
+    "hookform",
+    "Infinit",
+    "jalali",
+    "KENAR",
+    "Sonner",
+    "Supabase",
+    "tailwindcss",
+    "tanstack",
+    "املاین"
+  ],
+  "tailwindCSS.rootFontSize": 14,
+  "[jsonc]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
+}

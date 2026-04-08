@@ -1,0 +1,22 @@
+<table class="bold">
+    <tr>
+        <td style="width: 20%">قسط {{ index | number_to_persian_ordinal }}: <span class="teal">{{ payment.method | translate }}</span></td>
+        <td style="width: 26%">تاریخ پرداخت: <span class="teal">{{ payment.due_date | gregorian_to_jalali_date }}</span></td>
+        <td style="width: 26%">مبلغ (تومان): <span class="teal">{{ payment.amount | separate_number}}</span></td>
+        <td style="width: 28%" rowspan="2">
+            توضیحات:
+            <span class="teal">{{ payment.description or '_' }}</span>
+        </td>
+    </tr>
+    <tr>
+        <td colspan="2">
+            شماره شبا:
+            <span class="teal">IR{{ landlord.rent_bank_account.iban if payment.type.value == RENT else landlord.deposit_bank_account.iban}}</span>
+        </td>
+        <td>
+            به نام:
+            <span class="teal">{{ landlord.rent_bank_account.owner_name if payment.type.value == RENT else landlord.deposit_bank_account.owner_name}}</span>
+        </td>
+
+    </tr>
+</table>

@@ -1,0 +1,166 @@
+{
+  "files": [
+    {
+      "id": 7236716461333471232,
+      "bucket": "account",
+      "file_type": "AVATAR",
+      "name": "7236716461333471232.png",
+      "size": 13732,
+      "mime_type": "image/png",
+      "is_used": true
+    },
+    {
+      "id": 7236718576135102464,
+      "bucket": "account",
+      "file_type": "AVATAR",
+      "name": "7236718576135102464.jpeg",
+      "size": 7422,
+      "mime_type": "image/jpeg",
+      "is_used": true
+    },
+    {
+      "id": 7236721612978941952,
+      "bucket": "contract",
+      "file_type": "PROPERTY_DEED",
+      "name": "7236721612978941952.png",
+      "size": 13732,
+      "mime_type": "image/png",
+      "is_used": true
+    },
+    {
+      "id": 7236727210713837568,
+      "bucket": "contract",
+      "file_type": "PROPERTY_DEED",
+      "name": "7236727210713837568.png",
+      "size": 13732,
+      "mime_type": "image/png",
+      "is_used": true
+    },
+    {
+      "id": 7236741461801222144,
+      "bucket": "account",
+      "file_type": "AVATAR",
+      "name": "7236741461801222144.jpeg",
+      "size": 8735,
+      "mime_type": "image/jpeg",
+      "is_used": true
+    },
+    {
+      "id": 7236743400567926784,
+      "bucket": "account",
+      "file_type": "AVATAR",
+      "name": "7236743400567926784.jpg",
+      "size": 118066,
+      "mime_type": "image/jpeg",
+      "is_used": true
+    },
+    {
+      "id": 7236746623894732800,
+      "bucket": "contract",
+      "file_type": "PROPERTY_DEED",
+      "name": "7236746623894732800.png",
+      "size": 343576,
+      "mime_type": "image/png",
+      "is_used": true
+    },
+    {
+      "id": 7237038605452013568,
+      "bucket": "account",
+      "file_type": "AVATAR",
+      "name": "7237038605452013568.jpg",
+      "size": 198174,
+      "mime_type": "image/jpeg",
+      "is_used": true
+    },
+    {
+      "id": 7237396699516239873,
+      "bucket": "contract",
+      "file_type": "PROPERTY_DEED",
+      "name": "7237396699516239873.png",
+      "size": 108131,
+      "mime_type": "image/png",
+      "is_used": true
+    },
+    {
+      "id": 7237397336341610496,
+      "bucket": "contract",
+      "file_type": "PROPERTY_DEED",
+      "name": "7237397336341610496.png",
+      "size": 410695,
+      "mime_type": "image/png",
+      "is_used": true
+    },
+    {
+      "id": 7237877000411566080,
+      "bucket": "contract",
+      "file_type": "PROPERTY_DEED",
+      "name": "7237877000411566080.jpg",
+      "size": 372822,
+      "mime_type": "image/jpeg",
+      "is_used": true
+    },
+    {
+      "id": 7238085217137741824,
+      "bucket": "contract",
+      "file_type": "CONTRACT_PDF",
+      "name": "7238085217137741824.pdf",
+      "size": 69070,
+      "mime_type": "application/pdf",
+      "is_used": true
+    },
+    {
+      "id": 7238450312988647424,
+      "bucket": "contract",
+      "file_type": "PROPERTY_DEED",
+      "name": "7238450312988647424.jpg",
+      "size": 65304,
+      "mime_type": "image/jpeg",
+      "is_used": true
+    },
+    {
+      "id": 7240360032376840192,
+      "bucket": "contract",
+      "file_type": "CONTRACT_PDF",
+      "name": "7240360032376840192.pdf",
+      "size": 70187,
+      "mime_type": "application/pdf",
+      "is_used": true
+    },
+    {
+      "id": 7244706797100015617,
+      "bucket": "contract",
+      "file_type": "CONTRACT_PDF",
+      "name": "7244706797100015617.pdf",
+      "size": 69190,
+      "mime_type": "application/pdf",
+      "is_used": true
+    }
+  ],
+  "avatars": {
+    "7": "7236741461801222144",
+    "11": "7237038605452013568",
+    "194": "7236716461333471232",
+    "211": "7236716461333471232",
+    "218": "7236718576135102464",
+    "245": "7236743400567926784"
+  },
+  "contracts": {
+    "7243663682419359744": "7244706797100015617",
+    "7236728489024450560": "7240360032376840192",
+    "7237874764428103680": "7238085217137741824"
+  },
+  "property_rent_contracts": {
+    "7237874764428103682": "7238085217137741824",
+    "7236728489024450562": "7240360032376840192",
+    "7243663682419359746": "7244706797100015617"
+  },
+  "properties": {
+    "7236721650186612736": ["7236721612978941952"],
+    "7236727267836063744": ["7236727210713837568"],
+    "7236746734246871040": ["7236746623894732800"],
+    "7237397113535987712": ["7237396699516239873", "7237397336341610496"],
+    "7237877554030338048": ["7237877000411566080"],
+    "7238427152390094848": ["7236716461333471232"],
+    "7238219578227097600": ["7238450312988647424"]
+  }
+}

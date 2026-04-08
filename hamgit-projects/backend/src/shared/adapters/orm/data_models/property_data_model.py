@@ -1,0 +1,55 @@
+import sqlalchemy as sa
+
+from core.database import SQLALCHEMY_REGISTRY
+
+properties = sa.Table(
+    "properties",
+    SQLALCHEMY_REGISTRY.metadata,
+    sa.Column("id", sa.BigInteger, primary_key=True),
+    sa.Column("owner_user_id", sa.BigInteger, sa.ForeignKey("account.users.id"), nullable=False, index=True),
+    sa.Column("owner_user_role", sa.String, nullable=False, index=True),
+    #
+    sa.Column("property_type", sa.String),
+    sa.Column("deed_status", sa.String),
+    sa.Column("deed_image_file_ids", sa.ARRAY(sa.BigInteger), nullable=False, default=sa.text("'{}'::bigint[]")),
+    sa.Column("city_id", sa.BigInteger),
+    sa.Column("registration_area", sa.String),
+    sa.Column("main_register_number", sa.BigInteger, default=None),
+    sa.Column("sub_register_number", sa.BigInteger, default=None),
+    sa.Column("postal_code", sa.String),
+    sa.Column("address", sa.String),
+    #
+    sa.Column("area", sa.Float),
+    sa.Column("build_year", sa.Integer),
+    sa.Column("is_rebuilt", sa.Boolean, default=False),
+    sa.Column("structure_type", sa.String),
+    sa.Column("facade_types", sa.ARRAY(sa.String), nullable=False, default=sa.text("'{}'::text[]")),
+    sa.Column("direction_type", sa.String),
+    sa.Column("flooring_types", sa.ARRAY(sa.String), nullable=False, default=sa.text("'{}'::text[]")),
+    #
+    sa.Column("restroom_type", sa.String),
+    sa.Column("heating_system_types", sa.ARRAY(sa.String), nullable=False, default=sa.text("'{}'::text[]")),
+    sa.Column("cooling_system_types", sa.ARRAY(sa.String), nullable=False, default=sa.text("'{}'::text[]")),
+    sa.Column("kitchen_type", sa.String),
+    sa.Column("water_supply_type", sa.String),
+    sa.Column("electricity_supply_type", sa.String),
+    sa.Column("gas_supply_type", sa.String),
+    sa.Column("sewage_supply_type", sa.String),
+    sa.Column("number_of_rooms", sa.Integer),
+    sa.Column("parking", sa.Boolean, default=False),
+    sa.Column("parking_number", sa.Integer),
+    sa.Column("landline", sa.Boolean, default=False),
+    sa.Column("landline_number", sa.ARRAY(sa.String)),
+    sa.Column("storage_room", sa.Boolean, default=False),
+    sa.Column("storage_room_number", sa.Integer),
+    sa.Column("storage_room_area", sa.Float),
+    sa.Column("other_facilities", sa.ARRAY(sa.String), default=sa.text("'{}'::text[]")),
+    sa.Column("description", sa.String),
+    sa.Column("elevator", sa.Boolean, default=False, server_default=sa.text("false")),
+    sa.Column("electricity_bill_id", sa.String),
+    #
+    sa.Column("created_at", sa.DateTime(timezone=True), default=sa.func.now()),
+    sa.Column("updated_at", sa.DateTime(timezone=True), onupdate=sa.func.now()),
+    sa.Column("deleted_at", sa.DateTime(timezone=True)),
+    schema="shared",
+)

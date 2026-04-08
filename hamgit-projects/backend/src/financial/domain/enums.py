@@ -1,0 +1,97 @@
+from core.base.base_enum import BaseEnum
+
+
+class DiscountType(BaseEnum):
+    PERCENTAGE = "PERCENTAGE"
+    STATIC = "STATIC"
+    FORCE = "FORCE"
+
+
+class InvoiceItemType(BaseEnum):
+    TAX = "TAX"
+    TRACKING_CODE = "TRACKING_CODE"
+    DELIVERY = "DELIVERY"
+    DISCOUNT = "DISCOUNT"
+    WALLET_CREDIT = "WALLET_CREDIT"
+
+
+class InvoiceStatus(BaseEnum):
+    PAID = "PAID"
+    NOT_PAID = "NOT_PAID"
+
+
+class InvoiceClearingStatus(BaseEnum):
+    CLEARED = "CLEARED"
+    NOT_CLEARED = "NOT_CLEARED"
+    REQUESTED = "REQUESTED"
+
+
+class TransactionStatus(BaseEnum):
+    SUCCESS = "SUCCESS"
+    PENDING = "PENDING"
+    FAILED = "FAILED"
+
+
+class SettlementStatus(BaseEnum):
+    PENDING = "PENDING"
+    SUCCESS = "SUCCESS"
+    REJECTED = "REJECTED"
+
+
+class BankGateWay(BaseEnum):
+    ZARINPAL = "ZARINPAL"
+    PARSIAN = "PARSIAN"
+
+
+class ChequeCategory(BaseEnum):
+    SALARY = "SALARY"
+    INSURANCE = "INSURANCE"
+    HEALTH_CARE = "HEALTH_CARE"
+    INVESTMENT = "INVESTMENT"
+    FOREIGN_EXCHANGE = "FOREIGN_EXCHANGE"
+    LOAN = "LOAN"
+    RETIREMENT = "RETIREMENT"
+    MOVABLE_PROPERTY = "MOVABLE_PROPERTY"
+    IMMOVABLE_PROPERTY = "IMMOVABLE_PROPERTY"
+    CASH_MANAGEMENT = "CASH_MANAGEMENT"
+    CUSTOMS_DUTIES = "CUSTOMS_DUTIES"
+    TAX_DUTIES = "TAX_DUTIES"
+    GOVERNMENTAL_SERVICES = "GOVERNMENTAL_SERVICES"
+    FACILITIES = "FACILITIES"
+    BAIL_DEPOSIT = "BAIL_DEPOSIT"
+    DAILY_EXPENSES = "DAILY_EXPENSES"
+    CHARITY = "CHARITY"
+    GOODS_PURCHASE = "GOODS_PURCHASE"
+    SERVICES_PURCHASE = "SERVICES_PURCHASE"
+
+
+class PersonType(BaseEnum):
+    INDIVIDUAL = "INDIVIDUAL"
+    LEGAL_ENTITY = "LEGAL_ENTITY"
+    FOREIGN_NATIONALS = "FOREIGN_NATIONALS"
+
+
+class ProvinceType(BaseEnum):
+    TEHRAN = "TEHRAN"
+    OTHERS = "OTHERS"
+
+
+class WalletStatus(BaseEnum):
+    ACTIVE = "ACTIVE"
+    INACTIVE = "INACTIVE"
+    SUSPENDED = "SUSPENDED"
+
+
+class WalletTransactionCategory(BaseEnum):
+    RENT = "RENT"
+    DEPOSIT = "DEPOSIT"
+    COMMISSION = "COMMISSION"
+    WALLET_CHARGE = "WALLET_CHARGE"
+    CUSTOM_PAYMENT = "CUSTOM_PAYMENT"
+    MANUAL_CHARGE = "MANUAL_CHARGE"
+    WALLET_WITHDRAW = "WALLET_WITHDRAW"
+    REFUND = "REFUND"
+
+
+class CustomInvoiceType(BaseEnum):
+    ERNEST_MONEY = "ERNEST_MONEY"

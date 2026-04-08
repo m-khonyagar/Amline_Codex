@@ -1,0 +1,38 @@
+.toaster {
+  font-family: 'IRANSansX';
+
+  &[data-sonner-toaster][data-theme='light'] {
+    --error-bg: #ad3a10;
+    --error-text: #fff;
+    --error-border: #ad5636;
+    --success-bg: #179a9c;
+    --success-text: #fff;
+    --success-border: #30adaf;
+  }
+}
+
+.toaster__close-button {
+  order: 1;
+  border: none;
+  transform: none;
+  position: relative;
+  margin-right: auto;
+  width: 24px;
+  height: 24px;
+
+  svg {
+    width: 18px;
+    height: 18px;
+  }
+}
+
+.toast {
+  padding: 12px 16px;
+  font-weight: normal;
+}
+
+@media (max-width: 600px) {
+  .toaster--with-bottom-offset[data-sonner-toaster][data-y-position='bottom'] {
+    bottom: 88px;
+  }
+}

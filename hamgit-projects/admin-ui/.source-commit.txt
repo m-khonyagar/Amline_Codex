@@ -1,0 +1,2 @@
+source=https://hamgit.ir/amline/admin-ui.git
+commit=7107e35ad3f8515d707cb1c478fd1e35e89c7a39

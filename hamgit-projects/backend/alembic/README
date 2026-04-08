@@ -1,0 +1,13 @@
+Generic single-database configuration.
+
+op.execute("CREATE SCHEMA IF NOT EXISTS account")
+op.execute("CREATE SCHEMA IF NOT EXISTS financial")
+op.execute("CREATE SCHEMA IF NOT EXISTS contract")
+op.execute("CREATE SCHEMA IF NOT EXISTS shared")
+op.execute("CREATE SCHEMA IF NOT EXISTS advertisement")
+
+op.execute("DROP SCHEMA IF EXISTS account")
+op.execute("DROP SCHEMA IF EXISTS financial")
+op.execute("DROP SCHEMA IF EXISTS contract")
+op.execute("DROP SCHEMA IF EXISTS shared")
+op.execute("DROP SCHEMA IF EXISTS advertisement")

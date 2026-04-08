@@ -1,0 +1,86 @@
+.container {
+  --highlight-width: auto;
+  --highlight-x-pos: 0;
+
+  display: flex;
+}
+
+.controls {
+  display: flex;
+  justify-content: space-between;
+  background: #aedcdc;
+  border-radius: 10px;
+  padding: 4px;
+  gap: 4px;
+  margin: auto;
+  overflow: hidden;
+  position: relative;
+  width: 100%;
+  color: #4cb1b1;
+
+  &::before {
+    content: '';
+    background: #127b7d;
+    border-radius: 8px;
+    width: var(--highlight-width);
+    transform: translateX(var(--highlight-x-pos));
+    position: absolute;
+    top: 4px;
+    bottom: 4px;
+    left: 0;
+    z-index: 0;
+  }
+}
+
+.controls--ready::before {
+  transition:
+    transform 0.3s ease,
+    width 0.3s ease;
+}
+
+.segment {
+  min-width: 80px;
+  position: relative;
+  text-align: center;
+  z-index: 1;
+  flex: 1 1 100%;
+
+  input {
+    opacity: 0;
+    margin: 0;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    position: absolute;
+    width: 100%;
+    cursor: pointer;
+    height: 100%;
+  }
+
+  label {
+    cursor: pointer;
+    display: block;
+    padding: 8px 12px;
+    line-height: 1.7145;
+
+    transition: color 0.5s ease;
+  }
+}
+
+.segment--selected {
+  label {
+    color: #fff;
+  }
+}
+
+.segment--disabled {
+  label,
+  input {
+    cursor: not-allowed;
+  }
+
+  label {
+    color: theme('colors.gray.300');
+  }
+}

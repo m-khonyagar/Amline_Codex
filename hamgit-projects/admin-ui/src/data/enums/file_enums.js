@@ -1,0 +1,9 @@
+const FileType = {
+  AVATAR: 'AVATAR',
+  PROPERTY_DEED: 'PROPERTY_DEED',
+  CHEQUE: 'CHEQUE',
+  CONTRACT_PDF: 'CONTRACT_PDF',
+  PROPERTY_IMAGE: 'PROPERTY_IMAGE',
+}
+
+export { FileType }

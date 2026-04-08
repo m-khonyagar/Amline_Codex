@@ -1,0 +1,22 @@
+<header>
+    <div class="logo"></div>
+    <div class="info">
+        <div class="info__item">
+            <div class="title">تاریخ:</div>
+            <div class="content">{{ contract.date | gregorian_to_jalali_date }}</div>
+        </div>
+        <div class="info__item">
+            <div class="title">شماره:</div>
+            <div class="content">{{ contract.id or '-' }}</div>
+        </div>
+        <div class="info__item">
+            <div class="title">رمز:</div>
+            <div class="content">{{ contract.password or '-' }}</div>
+        </div>
+        <div class="info__item">
+            <div class="title">کد رهگیری:</div>
+            <div class="content">{{ contract.tracking_code or '-' }}</div>
+        </div>
+    </div>
+    <div class="bg"></div>
+</header>

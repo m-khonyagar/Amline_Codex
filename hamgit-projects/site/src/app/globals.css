@@ -1,0 +1,121 @@
+@import 'tailwindcss';
+@import 'tw-animate-css';
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-ring: var(--ring);
+  --color-input: var(--input);
+  --color-border: var(--border);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-destructive-active: var(--destructive-active);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-accent-active: var(--accent-active);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-primary-active: var(--primary-active);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --font-iransans: var(--font-iransans);
+}
+
+:root {
+  --background: rgb(255, 255, 255); /* #FFFFFF */
+  --foreground: rgb(30, 30, 31); /* #1E1E1F */
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.145 0 0);
+  --primary: rgb(23, 154, 156); /* #179A9C */
+  --primary-foreground: rgb(248, 250, 252); /* #F8FAFC */
+  --primary-active: rgb(0, 120, 121); /* #007879 */
+  --secondary: rgb(243, 243, 244); /* #F3F3F4 */
+  --secondary-foreground: #252438; /* #252438 */
+  --muted: rgb(230, 220, 220); /* #E6DCDC */
+  --muted-foreground: oklch(0.556 0 0);
+  --accent: rgb(231, 238, 244); /* #E7EEF4 */
+  --accent-foreground: rgb(15, 23, 42); /* #0F172A */
+  --accent-active: rgb(210, 218, 224); /* #D2DAE0 */
+  --destructive: rgb(240, 68, 68); /* #F04444 */
+  --destructive-foreground: rgb(248, 250, 252); /* #F8FAFC */
+  --destructive-active: rgb(180, 50, 50); /* #B43232 */
+  --border: rgb(229, 229, 229); /* #E5E5E5 */
+  --input: rgb(229, 229, 229); /* #E5E5E5 */
+  --ring: rgb(161, 161, 161); /* #A1A1A1 */
+
+  --header-height: 4rem;
+}
+
+.dark {
+  --background: rgb(2, 8, 23); /* #020817 */
+  --foreground: rgb(248, 250, 252); /* #F8FAFC */
+  --card: oklch(0.205 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.269 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.205 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: rgb(248, 250, 252); /* #F8FAFC */
+  --primary-foreground: rgb(15, 23, 42); /* #0F172A */
+  --primary-active: rgb(0, 120, 121); /* #007879 */
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: rgb(30, 41, 59); /* #1E293B */
+  --accent-foreground: rgb(248, 250, 252); /* #F8FAFC */
+  --accent-active: rgb(210, 218, 224); /* #D2DAE0 */
+  --destructive: rgb(127, 29, 29); /* #7F1D1D */
+  --destructive-foreground: rgb(248, 250, 252); /* #F8FAFC */
+  --destructive-active: rgb(170, 48, 48); /* #AA3030 */
+  --border: rgba(255, 255, 255, 0.1); /* #FFFFFF1A */
+  --input: rgba(255, 255, 255, 0.15); /* #FFFFFF26 */
+  --ring: rgb(115, 115, 115); /* #737373 */
+}
+
+@utility container {
+  margin-inline: auto;
+  padding-inline: 1rem;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer utilities {
+  /* This class is used for hide scrollbar */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+
+  /* This class is used for convert english numbers to persian numbers */
+  .fa {
+    font-feature-settings: 'ss02';
+  }
+}

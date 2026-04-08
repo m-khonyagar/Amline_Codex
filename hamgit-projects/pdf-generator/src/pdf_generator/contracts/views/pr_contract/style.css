@@ -1,0 +1,409 @@
+@font-face {
+  font-family: IRANSansX;
+  font-style: normal;
+  font-weight: normal;
+  src: url(../../../assets/fonts/iransans/IRANSansX-Regular.woff2) format('woff2'),
+    url(../../../assets/fonts/iransans/IRANSansX-Regular.woff) format('woff');
+}
+
+@font-face {
+  font-family: IRANSansX;
+  font-style: normal;
+  font-weight: 500;
+  src: url(../../../assets/fonts/iransans/IRANSansX-Medium.woff2) format('woff2'),
+    url(../../../assets/fonts/iransans/IRANSansX-Medium.woff) format('woff');
+}
+
+@font-face {
+  font-family: IRANSansX;
+  font-style: normal;
+  font-weight: Bold;
+  src: url(../../../assets/fonts/iransans/IRANSansX-Bold.woff2) format('woff2'),
+    url(../../../assets/fonts/iransans/IRANSansX-Bold.woff) format('woff');
+}
+
+@font-face {
+  font-family: Ravi;
+  font-style: normal;
+  font-weight: normal;
+  src: url(../../../assets/fonts/ravi/ravi-regular.ttf);
+}
+
+@font-face {
+  font-family: Ravi;
+  font-style: normal;
+  font-weight: 500;
+  src: url(../../../assets/fonts/ravi/ravi-medium.ttf);
+}
+
+@font-face {
+  font-family: Ravi;
+  font-style: normal;
+  font-weight: Bold;
+  src: url(../../../assets/fonts/ravi/ravi-bold.ttf);
+}
+
+@page {
+  font-family: IRANSansX;
+  margin: 3cm 1.5cm;
+  size: A4;
+
+  @left-top {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 60px;
+    background-color: #8bcdcd;
+    margin-top: -3cm;
+  }
+  @right-bottom {
+    content: '';
+    display: block;
+    width: 60px;
+    height: 60px;
+    margin-bottom: -3cm;
+    background-color: #d69c87;
+  }
+}
+
+*,
+::before,
+::after {
+  box-sizing: border-box; /* 1 */
+  border-width: 0; /* 2 */
+  border-style: solid; /* 2 */
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-size: inherit;
+  font-weight: inherit;
+}
+
+blockquote,
+dl,
+dd,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+hr,
+figure,
+p,
+pre {
+  margin: 0;
+}
+
+ol,
+ul,
+menu {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+b,
+strong {
+  font-weight: bolder;
+}
+
+.mt-3 {
+  margin-top: 1rem;
+}
+
+.mx-1 {
+  margin-left: 0.25rem;
+  margin-right: 0.25rem;
+}
+
+.ml-1 {
+  margin-left: 0.25rem;
+}
+
+.inline {
+  display: inline-block;
+}
+
+.text-right {
+  text-align: right;
+}
+
+.page-break {
+  page-break-before: always;
+}
+
+.teal {
+  color: #179a9c;
+}
+
+.grey {
+  color: #909090;
+}
+
+.teal-dark {
+  color: #0e5c5e;
+}
+
+.bold {
+  font-weight: bold;
+}
+
+.semi-bold {
+  font-weight: 500;
+}
+
+.flex {
+  display: flex;
+}
+
+.flex-col {
+  flex-direction: column;
+}
+
+.gap-2 {
+  gap: 0.5rem;
+}
+
+html {
+  color: #1f1f1f;
+  direction: rtl;
+  text-align: right;
+  font-family: IRANSansX;
+  font-size: 12px;
+  line-height: 24px;
+  font-feature-settings: 'ss02';
+}
+
+body {
+  margin: 0;
+}
+
+header {
+  display: flex;
+  position: fixed;
+  align-items: center;
+  top: -2.5cm;
+  width: 100%;
+  padding-left: 12px;
+  padding-right: 12px;
+}
+
+header .logo {
+  width: 130px;
+  height: 50px;
+  object-fit: contain;
+  background: url(../../../assets/images/logo.svg) no-repeat top center;
+}
+
+header .info {
+  margin-right: auto;
+}
+
+header .info__item {
+  line-height: 20px;
+  font-size: 11px;
+}
+
+header .info__item .title {
+  display: inline-block;
+}
+
+header .info__item .content {
+  display: inline-block;
+  color: #0e5c5e;
+}
+
+footer {
+  position: fixed;
+  bottom: -2.5cm;
+  width: 100%;
+}
+
+footer .stump {
+  position: relative;
+  width: 122px;
+  height: 88px;
+  opacity: 0.7;
+}
+
+footer .stump img {
+  position: absolute;
+  height: 100%;
+  width: 100%;
+  left: 0;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  object-fit: contain;
+  color: transparent;
+}
+
+footer .parties {
+  font-size: 8px;
+  line-height: 24px;
+  text-align: center;
+}
+
+footer .parties .party:not(:first-child) {
+  border-top: 1px solid #000000;
+}
+
+footer .address {
+  text-align: center;
+  color: #000000;
+  font-size: 10px;
+  font-weight: 400;
+  margin-top: 13px;
+  display: flex;
+  align-items: center;
+  justify-content: space-evenly;
+}
+
+footer .address svg {
+  vertical-align: middle;
+  margin-left: 2px;
+}
+
+footer .address a {
+  color: #000000;
+  text-decoration: none;
+}
+
+article {
+  display: block;
+  /*margin-top: 80px;*/
+  /*padding-bottom: 390px;*/
+}
+
+section#title {
+  font-size: 14px;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.clause {
+  margin-bottom: 16px;
+}
+
+.clause h2 {
+  font-size: 12px;
+  line-height: 24px;
+  font-weight: bold;
+  margin-bottom: 10px;
+}
+
+.clause h3 {
+  line-height: 24px;
+  font-size: 12px;
+  font-weight: 500;
+  margin-bottom: 8px;
+}
+
+.clause h4 {
+  line-height: 24px;
+  font-size: 12px;
+  font-weight: 500;
+  margin-bottom: 1px;
+}
+
+table {
+  border-collapse: collapse;
+  width: 100%;
+}
+
+table th {
+  border: 1px solid #4a4545;
+  text-align: center;
+  font-size: 8px;
+  font-weight: bold;
+  line-height: 12px;
+  padding: 5px 0;
+  background-color: #ffffff;
+}
+
+table td {
+  border: 1px solid #4a4545;
+  text-align: center;
+  background-color: #f2f2f2;
+  padding: 2px 2px;
+  height: 36px;
+  font-size: 10px;
+  line-height: 18px;
+  vertical-align: center;
+}
+
+table td.normal-height {
+  height: inherit;
+}
+
+/*dt, dd {*/
+/*    display: inline;*/
+/*    margin: 0;*/
+/*}*/
+
+/*dt {*/
+/*    color: #a9a;*/
+/*}*/
+
+/*dt::before {*/
+/*    content: '';*/
+/*    display: block;*/
+/*}*/
+
+/*dt::after {*/
+/*    content: ':';*/
+/*}*/
+
+/*table {*/
+/*    border-collapse: collapse;*/
+/*    width: 100%;*/
+/*}*/
+
+/*th {*/
+/*    border-bottom: .2mm solid #a9a;*/
+/*    color: #a9a;*/
+/*    font-size: 10pt;*/
+/*    font-weight: 400;*/
+/*    padding-bottom: .25cm;*/
+/*    text-transform: uppercase;*/
+/*}*/
+
+/*td {*/
+/*    padding-top: 7mm;*/
+/*}*/
+
+/*td:last-of-type {*/
+/*    color: #1ee494;*/
+/*    font-weight: bold;*/
+/*    text-align: right;*/
+/*}*/
+
+/*th, td {*/
+/*    text-align: center;*/
+/*}*/
+
+/*th:first-of-type, td:first-of-type {*/
+/*    text-align: left;*/
+/*}*/
+
+/*th:last-of-type, td:last-of-type {*/
+/*    text-align: right;*/
+/*}*/
+
+table#total {
+  background: #f6f6f6;
+  border-color: #f6f6f6;
+  border-style: solid;
+  border-width: 2cm 3cm;
+  bottom: 0;
+  font-size: 20pt;
+  margin: 0 -3cm;
+  position: absolute;
+  width: 18cm;
+}

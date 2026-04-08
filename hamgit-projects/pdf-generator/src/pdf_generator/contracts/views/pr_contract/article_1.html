@@ -1,0 +1,32 @@
+<section class="clause">
+    <h2>ماده 1_ طرفین قرارداد</h2>
+    <h3>بند اول- مشخصات موجر و مستاجر</h3>
+
+    <table>
+        <thead>
+        <tr>
+            <th>سمت</th>
+            <th>نام</th>
+            <th>نام و نام خانوادگی</th>
+            <th>نام پدر</th>
+            <th>کد ملی</th>
+            <th>تلفن</th>
+            <th style="width: 30%">آدرس</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        {% for party in [contract.landlord, contract.tenant] %}
+        <tr>
+            <td>{{ 'موجر' if loop.index == 1 else 'مستاجر' }}</td>
+            <td class="teal">{{ party.first_name }}</td>
+            <td class="teal">{{ party.last_name }}</td>
+            <td class="teal">{{ party.father_name }}</td>
+            <td class="teal">{{ party.national_code }}</td>
+            <td class="teal">{{ party.mobile }}</td>
+            <td class="teal">{{ party.address }}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</section>

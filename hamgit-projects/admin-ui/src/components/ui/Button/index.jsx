@@ -1,0 +1,93 @@
+import PropTypes from 'prop-types'
+import { forwardRef } from 'react'
+import { cva } from 'class-variance-authority'
+import { cn } from '@/utils/dom'
+import { CircleLoadingIcon } from '@/components/icons'
+import { Link } from 'react-router-dom'
+
+const buttonVariantsSchema = {
+  variant: {
+    default: 'bg-primary text-primary-foreground hover:bg-primary/90 disabled:bg-teal-100',
+    outline: 'border border-primary text-primary bg-background hover:bg-primary/10',
+    secondary: 'bg-secondary text-secondary-foreground hover:bg-secondary/80',
+    ghost: 'hover:bg-accent hover:text-accent-foreground',
+    link: 'text-primary underline-offset-4 hover:underline',
+    gray: 'text-gray-900 bg-gray-200 hover:bg-gray-300',
+    danger: 'text-red-900 bg-red-200 hover:bg-red-300 disabled:bg-red-100',
+  },
+  size: {
+    default: 'h-12 px-4 py-2',
+    sm: 'h-10 px-4 text-sm rounded-lg',
+    xs: 'h-8 text-xs rounded-md px-3',
+    lg: 'h-14 rounded-md px-8',
+    icon: 'h-14 w-10',
+  },
+}
+
+const buttonVariants = cva(
+  'relative select-none inline-flex items-center justify-center whitespace-nowrap rounded-xl ring-offset-background transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:pointer-events-none disabled:opacity-50',
+  {
+    variants: buttonVariantsSchema,
+    defaultVariants: {
+      variant: 'default',
+      size: 'default',
+    },
+  }
+)
+
+const Button = forwardRef(
+  (
+    {
+      className,
+      variant,
+      size,
+      href,
+      children,
+      type = 'button',
+      disabled = false,
+      loading = false,
+      ...props
+    },
+    ref
+  ) => {
+    const Comp = !!href && !disabled ? Link : 'button'
+
+    return (
+      <Comp
+        className={cn(buttonVariants({ variant, size, className }))}
+        disabled={disabled || loading}
+        ref={ref}
+        type={type}
+        to={href}
+        {...props}
+      >
+        {children}
+        {loading && (
+          <div
+            className={cn(
+              'absolute top-0 left-0 w-full h-full flex items-center justify-center text-gray-50 bg-gray-900/30',
+              size === 'sm' ? 'rounded-md' : 'rounded-xl'
+            )}
+          >
+            <CircleLoadingIcon className="animate-spin" />
+          </div>
+        )}
+      </Comp>
+    )
+  }
+)
+
+Button.propTypes = {
+  asChild: PropTypes.bool,
+  className: PropTypes.string,
+  size: PropTypes.string,
+  variant: PropTypes.string,
+  disabled: PropTypes.bool,
+  loading: PropTypes.bool,
+  type: PropTypes.string,
+}
+
+Button.displayName = 'Button'
+
+export default Button
+export { buttonVariants, buttonVariantsSchema }

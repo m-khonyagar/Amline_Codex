@@ -1,0 +1,71 @@
+.wheel {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  flex: 1 1 100%;
+  line-height: 1;
+  justify-content: center;
+
+  &__scene {
+    flex: 1 1 100%;
+    height: 100%;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    touch-action: pan-x;
+  }
+
+  &__viewport {
+    height: 60px;
+    width: 100%;
+    perspective: 1000px;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+    -khtml-user-select: none;
+    -webkit-tap-highlight-color: transparent;
+
+    &--perspective-left {
+      perspective-origin: calc(50% + 130px) 50%;
+      transform: translateX(27px);
+    }
+
+    &--perspective-right {
+      perspective-origin: calc(50% - 130px) 50%;
+      transform: translateX(-27px);
+    }
+  }
+
+  &__container {
+    height: 100%;
+    width: 100%;
+    transform-style: preserve-3d;
+    will-change: transform;
+  }
+
+  &__slide {
+    opacity: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    text-align: center;
+    align-items: center;
+    font-size: rem(12px);
+    justify-content: center;
+    // padding: rem(22px) 0;
+    backface-visibility: hidden;
+  }
+
+  &__label {
+    flex: 1 1 50%;
+    color: theme('colors.gray.300');
+    text-wrap: nowrap;
+    font-size: rem(16px);
+    text-align: right;
+    // font-weight: 700;
+    // transform: translateX(-55px);
+    pointer-events: none;
+  }
+}
