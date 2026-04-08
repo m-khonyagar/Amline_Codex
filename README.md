@@ -26,6 +26,16 @@ run.bat
 برای اجرای واقعی `POST /tasks` باید `OPENAI_API_KEY` در `.env` تنظیم باشد.
 اگر تنظیم نباشد، API خطای واضح `400` برمی‌گرداند.
 
+## محدوده مخزن
+هستهٔ اصلی این ریپو همان agent MVP در ریشهٔ مخزن است.
+
+- فایل‌های ریشه مثل `agent.py`, `api.py`, `tool_registry.py`, `browser_tool.py` و `tests/` محصول اصلی‌اند.
+- `deployment/` ابزارها و اسناد استقرار است.
+- `saas-mvp/` یک زیربخش اکتشافی جدا از هسته agent است.
+- `hamgit-projects/` و `web/` مواد جانبی/قدیمی‌تر هستند و نباید بدون دلیل به هستهٔ agent گره بخورند.
+
+جزئیات بیشتر در `REPOSITORY_BOUNDARIES.md` و `ARTIFACT_POLICY.md` آمده است.
+
 ## Endpointها
 - `GET /health`
 - `GET /tasks`
