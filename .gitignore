@@ -64,6 +64,7 @@ Task/
 # ---- Playwright / Test artifacts ----
 playwright-report/
 test-results/
+*.trace.zip
 
 # ---- Misc ----
 *.bak
@@ -71,3 +72,8 @@ test-results/
 dash_snap.json
 dash_layout_check.txt
 production_tables.json
+
+# Prevent future local runtime bundles and disposable archives from re-entering git
+**/portable_runtime/
+*.zip
+*.rar
