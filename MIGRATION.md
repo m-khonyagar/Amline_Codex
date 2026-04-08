@@ -114,7 +114,7 @@ After migration is validated:
 - [ ] Rotate SSH credentials that were previously exposed in `Amline_namAvaran/check_server.py`
 - [ ] Review `Amline_Old_Power` for any additional hardcoded credentials before import
 - [ ] Enable GitHub secret scanning on this repo (Settings → Security → Secret scanning)
-- [ ] Consider adding Dependabot for automated dependency updates
+- [x] Dependabot configured (`.github/dependabot.yml`) for all Python + npm + Actions ecosystems
 
 ---
 
