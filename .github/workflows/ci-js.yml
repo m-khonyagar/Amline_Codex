@@ -27,7 +27,7 @@ jobs:
         working-directory: apps/namAvaran/admin-ui
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -60,7 +60,7 @@ jobs:
         working-directory: apps/namAvaran/channel-gateway
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -83,7 +83,7 @@ jobs:
         working-directory: apps/saas-mvp
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -106,7 +106,7 @@ jobs:
         working-directory: apps/namAvaran/amline-ui
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -134,7 +134,7 @@ jobs:
         working-directory: apps/namAvaran/site
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
