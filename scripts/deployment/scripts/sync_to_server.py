@@ -94,7 +94,7 @@ def main():
         print(line, end="")
     out.channel.recv_exit_status()
     c.close()
-    print("Done. Visit https://agentos.amline.ir")
+    print("Done. Visit https://agent.amline.ir")
 
 if __name__ == "__main__":
     main()

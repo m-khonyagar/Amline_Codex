@@ -75,12 +75,12 @@ ssh -i C:\Users\Amline\.ssh\winfsurf20_ed25519 ubuntu@37.152.186.151
 
 | محیط | آدرس |
 |------|------|
-| Staging | http://staging.agentos.amline.ir |
-| Production | https://agentos.amline.ir |
+| Staging | http://s.agent.amline.ir |
+| Production | https://agent.amline.ir |
 
 **دسترسی با دامنهٔ staging:** برای تست محلی، یک خط به hosts اضافه کن:
 ```
-37.152.186.151 staging.agentos.amline.ir
+37.152.186.151 s.agent.amline.ir
 ```
 (ویندوز: `C:\Windows\System32\drivers\etc\hosts`)
 

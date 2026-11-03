@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""دیپلوی به staging.agentos.amline.ir — تست قبل از production."""
+"""دیپلوی به s.agent.amline.ir — تست قبل از production."""
 import os
 import sys
 
@@ -120,7 +120,7 @@ def main():
         print("\nStaging deploy had errors. Check logs: sudo docker logs agentos-orchestrator-staging")
         sys.exit(1)
 
-    print("\nDone. Staging: https://staging.agentos.amline.ir")
+    print("\nDone. Staging: https://s.agent.amline.ir")
     print("After tests pass, run: python deployment/scripts/sync_to_server.py")
 
 
